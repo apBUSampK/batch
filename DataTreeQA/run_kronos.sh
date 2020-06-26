@@ -20,10 +20,10 @@ echo log_file=$log_file
 source $root_config
 
 echo RUNNING:
-echo build/RunDataTreeQA $job_file_list $ref_file_list $out_file $config_file $config_name $cuts_config
+echo build_cbm/RunDataTreeQA $job_file_list $ref_file_list $out_file $config_file $config_name $cuts_config
 
-build/RunDataTreeQA $job_file_list $ref_file_list $out_file $config_file $config_name $cuts_config &> $log_file
+build_cbm/RunDataTreeQA $job_file_list $ref_file_list $out_file $config_file $config_name $cuts_config &> $log_file
 
-rm job_file_list
+rm $job_file_list
 
 echo "DONE"

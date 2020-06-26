@@ -1,0 +1,1 @@
+/lustre/cbm/users/ogolosov/mc/macros/submit_urqmd/urqmd-3.4/runqmd.bash

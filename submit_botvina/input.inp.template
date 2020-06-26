@@ -1,0 +1,27 @@
+outfile.inf
+outfile.out
+outfile.r10
+outfile.r11
+outfile.r12
+outfile.r13
+SRC_PATH_TEMPLATE/tables/atab.dat
+SRC_PATH_TEMPLATE/tables/mass.tbl
+SRC_PATH_TEMPLATE/tables/level.tbl
+SRC_PATH_TEMPLATE/tables/shell.tbl
+SRC_PATH_TEMPLATE/tables/channel1.tab
+ -1,new
+AP_TEMPLATE,AT_TEMPLATE,ZP_TEMPLATE,ZT_TEMPLATE,0.0,0.940,TO_TEMPLATE,NEVENTS_TEMPLATE
+1
+0.0, 1.00, 1, 1.4,0.7, 890.0
+ 11, 1, 6, -1, 0
+-4.1,0.2,-1.5,0.1,0.05,0.0,0.4,-9.0
+JG,STAT
+ AP,AT,ZP,ZT,SP,MP,T0/AP,LIMC
+ ibrems:  have this card only for gamma+A, 0/1 for fixed/bresstrahlung gammas
+ifspe
+xbmin,xbmax,ifib0,MMES,MBAR,TIMGO(calculation time, min.)
+ JJJ,ISYS,nevtype(6/66),iw12(-1/0)-(begin/continue) write on 12,
+iw13(0/1)-(no/write) on unit 13
+ymin,dy,ywmin,dyw,dpt,ptmin,dpy,pymin
+
+
