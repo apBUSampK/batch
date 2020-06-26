@@ -1,9 +1,8 @@
 #!/bin/bash
 
 taskId=$SLURM_ARRAY_TASK_ID
-taskId4=$(printf "%04d" "$SLURM_ARRAY_TASK_ID")
-#plutoFile=/lustre/nyx/cbm/prod/gen/pluto/auau/cktA/8gev/omega/epem/pluto.auau.8gev.omega.epem.${taskId4}.root
-plutoFile=/lustre/cbm/users/galatyuk/pluto/epem/12gev/w_pluto/w_${taskId}.root
+taskId5=$(printf "%05d" "$SLURM_ARRAY_TASK_ID")
+plutoFile=/lustre/cbm/users/galatyuk/pluto/epem/12gev/w_pluto/w_${taskId5}.root
  
 input_file=${input_file}${taskId}.root
 job_out_dir=${out_dir}/${taskId}
