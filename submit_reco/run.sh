@@ -1,11 +1,11 @@
-pbeam=12
+#pbeam=3.3
 #pbeam=5.36
-#pbeam=12
+pbeam=12
 #pbeam=40
 #pbeam=158
-batch=1
+batch=0
 export nEvents=1000
-jobRange=1-100
+jobRange=100
 export run_transport=0
 export run_digi=0
 export run_reco=0
@@ -23,15 +23,15 @@ partition=main
 #partition=long
  
 geant_version=4
-#main_input=dcmqgsm_smm
-main_input=dcmqgsm_smm_pluto
+main_input=dcmqgsm_smm
+#main_input=dcmqgsm_smm_pluto
 #main_input=urqmd
 #main_input=pluto
 #main_input=eDelta
 #emb_input=pluto
-bg_input=eDelta
+#bg_input=eDelta
 urqmd_eos=0
-embed_pluto_during_transport=0
+embed_pluto_during_transport=1
 
 export delete_sim_files=0
 
@@ -87,6 +87,8 @@ eos=""
 [ ${main_input} == dcmqgsm_smm ] && main_input_file_name=dcmqgsm
 [ ${main_input} == pluto ] && main_input_file_name=w
 
+[ ${embed_pluto_during_transport} == 1 ] && main_input=${main_input}_pluto
+
 user_mc_dir=/lustre/cbm/users/${USER}/mc
 export input_file=/lustre/cbm/users/ogolosov/mc/generators/${main_input}${main_input_version}/${system}/pbeam${pbeam}agev${eos}/${centrality}/root/${main_input_file_name}_
 export source_dir=${user_mc_dir}/macros/submit_reco/
@@ -97,7 +99,6 @@ export emb_input_dir=${pre_out_dir}/${emb_input}/${post_out_dir}
 export bg_input_dir=${pre_out_dir}/${bg_input}/${post_out_dir}
 suppl_inputs=( ${emb_input} ${bg_input} )
 input=${main_input}
-[ ${embed_pluto_during_transport} == 1 ] && input=${main_input}_pluto
 for i in ${suppl_inputs[@]};do input=${input}_${i};done
 export out_dir=${pre_out_dir}/${input}/${post_out_dir}
 export tree_dir=${out_dir}/tree
@@ -140,9 +141,22 @@ source ${cbmroot_config}
 rsync -v run.sh ${out_dir}/macro
 rsync -v run_sim_reco.sh ${out_dir}/macro
 
-if [ ${run_transport} == 1 ];then
-  #make local copy of transport macro
-  rsync -v ${VMCWORKDIR}/macro/run/run_transport.C ${out_dir}/macro
+#make local copy of transport macro
+rsync -v ${VMCWORKDIR}/macro/run/run_transport.C ${out_dir}/macro
+#shift target and beam in case of sis100_electron_sts_long setup
+if [ ${base_setup} == sis100_electron_sts_long ]
+then
+  sed -i -- 's~run.SetTarget("Gold", 0.025, 2.5);~run.SetTarget("Gold", 0.025, 2.5, 0., 0., -4.);~g' ${out_dir}/macro/run_transport.C
+  sed -i -- 's~run.SetBeamPosition(0., 0., 0.1, 0.1);~run.SetBeamPosition(0., 0., 0.1, 0.1, -4.);~g' ${out_dir}/macro/run_transport.C
+fi
+#change geometry setup
+sed -i -- "s~run.Run(nEvents);~${set_setup}\n  run.Run(nEvents);~g" ${out_dir}/macro/run_transport.C
+#for some reason geo files do not survive but are needed for the converter
+cd ${out_dir}/macro
+root -b -q "run_transport.C (0, \"${base_setup}\")" &> transport.log
+cd -
+
+if [ ${run_transport} == 1 ] || [ ${run_treemaker} == 1 ];then
   #set geant version
   sed -i -- "s~run.Run(nEvents);~run.SetEngine(kGeant${geant_version});\n  run.Run(nEvents);\n~g" ${out_dir}/macro/run_transport.C
   #change generator type if pluto is the main input
@@ -153,23 +167,11 @@ if [ ${run_transport} == 1 ];then
     [ ${base_setup} == sis100_electron_sts_long ] && Ztarget=-5. || Ztarget=-1.
     sed -i -- "s~run.AddInput(inFile);~run.AddInput(new FairIonGenerator(79, 197, 79, ${nIons}, 0., 0., ${pbeam}, 0., 0., ${Ztarget}));~g" ${out_dir}/macro/run_transport.C
   fi
-  #embed pluto on transport stage
-  [ ${embed_pluto_during_transport} == 1 ] && sed -i -- "s~run.AddInput(inFile);~run.AddInput(inFile);\n  run.AddInput(PLUTOFILE, kPluto);~g" ${out_dir}/macro/run_transport.C
-  #shift target and beam in case of sis100_electron_sts_long setup
-  if [ ${base_setup} == sis100_electron_sts_long ]
-  then
-    sed -i -- 's~run.SetTarget("Gold", 0.025, 2.5);~run.SetTarget("Gold", 0.025, 2.5, 0., 0., -4.);~g' ${out_dir}/macro/run_transport.C
-    sed -i -- 's~run.SetBeamPosition(0., 0., 0.1, 0.1);~run.SetBeamPosition(0., 0., 0.1, 0.1, -4.);~g' ${out_dir}/macro/run_transport.C
-  fi
   #seed the random number generator
   seed=0 # may be constant or e.g. TASKID
   sed -i -- "s~run.Run(nEvents);~gRandom->SetSeed(${seed});\n  run.Run(nEvents);~g" ${out_dir}/macro/run_transport.C
-  #change geometry setup
-  sed -i -- "s~run.Run(nEvents);~${set_setup}\n  run.Run(nEvents);~g" ${out_dir}/macro/run_transport.C
-  #for some reason geo files do not survive but are needed for the converter
-  cd ${out_dir}/macro
-  root -b -q "run_transport.C (0, \"${base_setup}\")" &> transport.log
-  cd -
+  #embed pluto on transport stage
+  [ ${embed_pluto_during_transport} == 1 ] && sed -i -- "s~run.AddInput(inFile);~run.AddInput(inFile);\n  run.AddInput(PLUTOFILE, kPluto);~g" ${out_dir}/macro/run_transport.C
 fi
 
 if [ ${run_digi} == 1 ];then 
