@@ -3,12 +3,12 @@
 pbeam=12
 #pbeam=40
 #pbeam=158
-batch=0
+batch=1
 export nEvents=1000
-jobRange=100
+jobRange=1-100
 export run_transport=0
-export run_digi=0
-export run_reco=0
+export run_digi=1
+export run_reco=1
 export run_treemaker=1
 holeDiameter=20 # 0 or 6 or 20
 nPSDmodules=44 # 44 or 46 or 52
@@ -22,16 +22,16 @@ build=fr_18.2.1_fs_jun19p1
 partition=main
 #partition=long
  
-geant_version=4
-main_input=dcmqgsm_smm
+geant_version=3
+#main_input=dcmqgsm_smm
 #main_input=dcmqgsm_smm_pluto
 #main_input=urqmd
 #main_input=pluto
-#main_input=eDelta
+main_input=eDelta
 #emb_input=pluto
 #bg_input=eDelta
 urqmd_eos=0
-embed_pluto_during_transport=1
+#embed_pluto_during_transport=1
 
 export delete_sim_files=0
 
@@ -87,10 +87,11 @@ eos=""
 [ ${main_input} == dcmqgsm_smm ] && main_input_file_name=dcmqgsm
 [ ${main_input} == pluto ] && main_input_file_name=w
 
-[ ${embed_pluto_during_transport} == 1 ] && main_input=${main_input}_pluto
-
 user_mc_dir=/lustre/cbm/users/${USER}/mc
 export input_file=/lustre/cbm/users/ogolosov/mc/generators/${main_input}${main_input_version}/${system}/pbeam${pbeam}agev${eos}/${centrality}/root/${main_input_file_name}_
+
+[ ${embed_pluto_during_transport} == 1 ] && main_input=${main_input}_pluto
+
 export source_dir=${user_mc_dir}/macros/submit_reco/
 pre_out_dir=${user_mc_dir}/cbmsim/${release}_${build}
 post_out_dir=${system}/${pbeam}agev/${centrality}/${setup}${postfix}/TGeant${geant_version}

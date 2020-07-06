@@ -10,7 +10,8 @@ filenum=$(($SLURM_ARRAY_TASK_ID))
 mkdir -p $log_dir/$filenum
 
 source $root_config
-source $unigen_path/config/unigenlogin.bash
+cd $unigen_path
+source $unigen_path/config/unigenlogin.sh
 
 rsync $source_dir/src/* $log_dir/$filenum/
 
