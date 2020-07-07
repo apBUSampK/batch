@@ -33,11 +33,11 @@ pbeam=69.55
 #pbeam=158
 
 eos=0
-events_per_file=2000 # set double to get desired amount after removing empty events
+events_per_file=2 # set double to get desired amount after removing empty events
 jobRange=0-0
 #partition=long
-partition=main
-#partition=debug
+#partition=main
+partition=debug
 system=auau
 #system=pbpb
 
@@ -49,13 +49,13 @@ system=auau
 [ "$jobRange" == "" ] && echo "Empty jobRange in the file sequence. Provide it as a 3rd argument" && exit
 [ "$partition" == "" ] && echo "Empty partition. Provide it as a 4th argument (options: main / debug)" && exit
 
-source_dir_orig=/lustre/nyx/cbm/users/ogolosov/mc/macros/submit_urqmd
+source_dir_orig=/lustre/cbm/users/ogolosov/mc/macros/submit_urqmd
 
 user=$USER  # test it
 
 root_config=/cvmfs/fairroot.gsi.de/fairsoft/jun19p1/bin/thisroot.sh
-unigen_path=/lustre/nyx/cbm/users/ogolosov/soft/UniGen
-outdir="/lustre/nyx/cbm/users/$user/mc/generators/urqmd/v3.4/"$system"/pbeam"$pbeam"agev_eos"$eos"/mbias"
+unigen_path=/lustre/cbm/users/ogolosov/soft/UniGen
+outdir="/lustre/cbm/users/$user/mc/generators/urqmd/v3.4/"$system"/pbeam"$pbeam"agev_eos"$eos"/mbias"
 outdir_root="$outdir/root/"
 outdir_dat="$outdir/dat/"
 source_dir="$outdir/src/"
@@ -70,18 +70,18 @@ mkdir -p $log_dir
 
 rsync -av $source_dir_orig/ $source_dir/
 
-cp $source_dir/src/inputfile.template $source_dir/src/inputfile
+mv $source_dir/inputfile.template $source_dir/inputfile
 
 [ "$system" == "pbpb" ] && targetA=208 && targetZ=82 && projA=208 && projZ=82
 [ "$system" == "auau" ] && targetA=197 && targetZ=79 && projA=197 && projZ=79
 
-sed -i -- "s~targetA~$targetA~g" $source_dir/src/inputfile
-sed -i -- "s~targetZ~$targetZ~g" $source_dir/src/inputfile
-sed -i -- "s~projA~$projA~g" $source_dir/src/inputfile
-sed -i -- "s~projZ~$projZ~g" $source_dir/src/inputfile
-sed -i -- "s~EOS~$eos~g" $source_dir/src/inputfile
-sed -i -- "s~nEvents~$events_per_file~g" $source_dir/src/inputfile
-sed -i -- "s~plab~$pbeam~g" $source_dir/src/inputfile
+sed -i -- "s~targetA~$targetA~g" $source_dir/inputfile
+sed -i -- "s~targetZ~$targetZ~g" $source_dir/inputfile
+sed -i -- "s~projA~$projA~g" $source_dir/inputfile
+sed -i -- "s~projZ~$projZ~g" $source_dir/inputfile
+sed -i -- "s~EOS~$eos~g" $source_dir/inputfile
+sed -i -- "s~nEvents~$events_per_file~g" $source_dir/inputfile
+sed -i -- "s~plab~$pbeam~g" $source_dir/inputfile
 
 currentDir=`pwd`
 echo "current dir:" $currentDir

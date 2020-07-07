@@ -1,6 +1,6 @@
 #!/bin/bash
 
-
+elapsed=$SECONDS
 echo $outdir_root
 
 outfilenamemask=urqmd
@@ -13,12 +13,10 @@ source $root_config
 cd $unigen_path
 source $unigen_path/config/unigenlogin.sh
 
-rsync $source_dir/src/* $log_dir/$filenum/
-
 cd "$log_dir/$filenum/"
-echo "current dir:" $PDW
-
-elapsed=$SECONDS
+echo "current dir:" $PWD
+ln -s ${source_dir}/urqmd-3.4/urqmd.x86_64 .
+ln -s ${source_dir}/inputfile .
 
 seed=$(expr $seed + $filenum)
 sed -i -- "s~seed~$seed~g" inputfile
@@ -26,8 +24,9 @@ sed -i -- "s~seed~$seed~g" inputfile
 datfile=$outdir_dat/${outfilenamemask}_$filenum.dat
 rootfile=$outdir_root/${outfilenamemask}_$filenum.root
 
-./runqmd.bash
+${source_dir}/urqmd-3.4/runqmd.bash
 mv test.f14 $datfile
+rm -r ${log_dir}/${filenum}
 
 which root
 
