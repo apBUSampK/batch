@@ -1,8 +1,8 @@
 #!/bin/bash
 
-taskId=$SLURM_ARRAY_TASK_ID
-taskId5=$(printf "%05d" "$SLURM_ARRAY_TASK_ID")
-plutoFile=/lustre/cbm/users/galatyuk/pluto/epem/12gev/w_pluto/w_${taskId5}.root
+taskId=${SLURM_ARRAY_TASK_ID}
+taskId5=$(printf "%05d" ${taskId})
+plutoFile=${pluto_path}${taskId5}.root
  
 input_file=${input_file}${taskId}.root
 job_out_dir=${out_dir}/${taskId}

@@ -4,16 +4,18 @@ pbeam=12
 #pbeam=40
 #pbeam=158
 batch=1
-export nEvents=1000
-jobRange=1-100
-export run_transport=0
+export nEvents=1
+jobRange=1-1
+export run_transport=1
 export run_digi=1
 export run_reco=1
 export run_treemaker=1
 holeDiameter=20 # 0 or 6 or 20
 nPSDmodules=44 # 44 or 46 or 52
 #pipeVersion=0
-mvd=1
+#mvd=0
+#psd=0
+targetThickness=25 # mkm 
 #postfix=_test
 release=apr20
 build=fr_18.2.1_fs_jun19p1
@@ -22,16 +24,24 @@ build=fr_18.2.1_fs_jun19p1
 partition=main
 #partition=long
  
-geant_version=3
-#main_input=dcmqgsm_smm
+geant_version=4
+physicsList=FTFP_BERT_EMV
+main_input=dcmqgsm_smm
 #main_input=dcmqgsm_smm_pluto
 #main_input=urqmd
 #main_input=pluto
-main_input=eDelta
+#main_input=eDelta
 #emb_input=pluto
 #bg_input=eDelta
+export pluto_signal=w
+#export pluto_signal=wdalitz
+#export pluto_signal=phi
+#export pluto_signal=etaP
+#export pluto_signal=rho0
+#export pluto_signal=inmed_had_epem_12gev
+#export pluto_signal=qgp_epem_12gev
 urqmd_eos=0
-#embed_pluto_during_transport=1
+embed_pluto_during_transport=1
 
 export delete_sim_files=0
 
@@ -44,6 +54,7 @@ centrality=mbias
 
 export base_setup=sis100_electron
 #export base_setup=sis100_electron_sts_long
+
 
 cbmroot_config=/lustre/cbm/users/ogolosov/soft/cbmroot/${release}/${build}/config.sh
 
@@ -64,6 +75,7 @@ cbmroot_config=/lustre/cbm/users/ogolosov/soft/cbmroot/${release}/${build}/confi
 
 #change geometry if needed
 setup=${base_setup}
+[ ${targetThickness} != "" ] && setup=${setup}_target_${targetThickness}_mkm
 if [ ${psdTag} != v18e ];then
   setup=${setup}_psd_${psdTag}
   set_psd="CbmSetup::Instance()->SetModule(ECbmModuleId::kPsd, \"${psdTag}\");\n  "
@@ -76,6 +88,11 @@ if [ ${mvd} == 0 ];then
   setup=${setup}_no_mvd
   set_mvd="CbmSetup::Instance()->RemoveModule(ECbmModuleId::kMvd);\n  "
 fi
+if [ ${psd} == 0 ];then
+  setup=${setup}_no_psd
+  set_psd="CbmSetup::Instance()->RemoveModule(ECbmModuleId::kPsd);\n  "
+fi
+[ ${physicsList} != "" ] && setup=${setup}_${physicsList}
 #[ ${main_input} == eDelta ] && set_psd="CbmSetup::Instance()->RemoveModule(ECbmModuleId::kMvd);\n  " #prevent psd response to beam nuclei
 set_scaling="CbmSetup::Instance()->SetFieldScale(${pbeam} / 12.);"
 set_setup="${set_mvd}${set_psd}${set_pipe}${set_scaling}"
@@ -85,7 +102,8 @@ main_input_version=""
 eos=""
 [ ${main_input} == urqmd ] && main_input_version='/v3.4' && eos=_eos${urqmd_eos} && main_input_file_name=urqmd
 [ ${main_input} == dcmqgsm_smm ] && main_input_file_name=dcmqgsm
-[ ${main_input} == pluto ] && main_input_file_name=w
+if [ ${main_input} == pluto ] && main_input_file_name=${pluto_signal}
+
 
 user_mc_dir=/lustre/cbm/users/${USER}/mc
 export input_file=/lustre/cbm/users/ogolosov/mc/generators/${main_input}${main_input_version}/${system}/pbeam${pbeam}agev${eos}/${centrality}/root/${main_input_file_name}_
@@ -142,24 +160,30 @@ source ${cbmroot_config}
 rsync -v run.sh ${out_dir}/macro
 rsync -v run_sim_reco.sh ${out_dir}/macro
 
-#make local copy of transport macro
-rsync -v ${VMCWORKDIR}/macro/run/run_transport.C ${out_dir}/macro
-#shift target and beam in case of sis100_electron_sts_long setup
-if [ ${base_setup} == sis100_electron_sts_long ]
-then
-  sed -i -- 's~run.SetTarget("Gold", 0.025, 2.5);~run.SetTarget("Gold", 0.025, 2.5, 0., 0., -4.);~g' ${out_dir}/macro/run_transport.C
-  sed -i -- 's~run.SetBeamPosition(0., 0., 0.1, 0.1);~run.SetBeamPosition(0., 0., 0.1, 0.1, -4.);~g' ${out_dir}/macro/run_transport.C
-fi
-#change geometry setup
-sed -i -- "s~run.Run(nEvents);~${set_setup}\n  run.Run(nEvents);~g" ${out_dir}/macro/run_transport.C
-#for some reason geo files do not survive but are needed for the converter
-cd ${out_dir}/macro
-root -b -q "run_transport.C (0, \"${base_setup}\")" &> transport.log
-cd -
 
 if [ ${run_transport} == 1 ] || [ ${run_treemaker} == 1 ];then
+  #make local copy of transport macro
+  rsync -v ${VMCWORKDIR}/macro/run/run_transport.C ${out_dir}/macro
+  
+  #shift target and beam in case of sis100_electron_sts_long setup
+  if [ ${base_setup} == sis100_electron_sts_long ]
+  then
+    sed -i -- 's~run.SetTarget("Gold", 0.025, 2.5);~run.SetTarget("Gold", 0.025, 2.5, 0., 0., -4.);~g' ${out_dir}/macro/run_transport.C
+    sed -i -- 's~run.SetBeamPosition(0., 0., 0.1, 0.1);~run.SetBeamPosition(0., 0., 0.1, 0.1, -4.);~g' ${out_dir}/macro/run_transport.C
+  fi
+  #change target thickness
+  [ ${targetThickness} != "" ] && sed -i -- "s~run.SetTarget(\"Gold\", 0.025~run.SetTarget(\"Gold\", $(printf "0.%04d" ${targetThickness})~g" ${out_dir}/macro/run_transport.C
+  #change geometry setup
+  sed -i -- "s~run.Run(nEvents);~${set_setup}\n  run.Run(nEvents);~g" ${out_dir}/macro/run_transport.C
+  #for some reason geo files do not survive but are needed for the converter
+  cd ${out_dir}/macro
+  root -b -q "run_transport.C (0, \"${base_setup}\")" &> transport.log
+  cd -
   #set geant version
   sed -i -- "s~run.Run(nEvents);~run.SetEngine(kGeant${geant_version});\n  run.Run(nEvents);\n~g" ${out_dir}/macro/run_transport.C
+  #change Geant4 physics list
+  g4settings="CbmGeant4Settings* g4Settings = new CbmGeant4Settings();\n  g4Settings->SetG4RunConfig(\"geomRoot\",\"${physicsList}+optical\",\"stepLimiter\");\n  g4Settings->AddG4Command(\"/mcVerbose/all 2\");\n  run.SetGeant4Settings(g4Settings);\n"
+  [ ${physicsList} != "" ] && sed -i -- "s~run.SetEngine(kGeant4);~${g4settings}  run.SetEngine(kGeant4);~g" ${out_dir}/macro/run_transport.C
   #change generator type if pluto is the main input
   [ ${main_input} == pluto ] && sed -i -- 's~run.AddInput(inFile);~run.AddInput(inFile,kPluto);~g' ${out_dir}/macro/run_transport.C
   #change generator type if eDelta is the main input
@@ -172,7 +196,11 @@ if [ ${run_transport} == 1 ] || [ ${run_treemaker} == 1 ];then
   seed=0 # may be constant or e.g. TASKID
   sed -i -- "s~run.Run(nEvents);~gRandom->SetSeed(${seed});\n  run.Run(nEvents);~g" ${out_dir}/macro/run_transport.C
   #embed pluto on transport stage
-  [ ${embed_pluto_during_transport} == 1 ] && sed -i -- "s~run.AddInput(inFile);~run.AddInput(inFile);\n  run.AddInput(PLUTOFILE, kPluto);~g" ${out_dir}/macro/run_transport.C
+  if [ ${embed_pluto_during_transport} == 1 ];then
+    registerDileptons='FairRunSim::Instance()->AddNewParticle(new FairParticle(99009911,"dielectron",kPTUndefined,2*TDatabasePDG::Instance()->GetParticle(11)->Mass(),0.,0.,"dilepton", 0., 1, 1, 0, 1, 1, 0, 0, 1, true));\n  FairRunSim::Instance()->AddNewParticle(new FairParticle(99009913,"dimuon",kPTUndefined,2*TDatabasePDG::Instance()->GetParticle(13)->Mass(),0.,0.,"dilepton", 0., 1, 1, 0, 1, 1, 0, 0, 1, true));'
+    sed -i -- "s~run.AddInput(inFile);~run.AddInput(inFile);\n  run.AddInput(PLUTOFILE, kPluto);~g" ${out_dir}/macro/run_transport.C
+    sed -i -- "s~run.Run(nEvents);~${registerDileptons}\n  run.Run(nEvents);~g" ${out_dir}/macro/run_transport.C
+  fi
 fi
 
 if [ ${run_digi} == 1 ];then 
