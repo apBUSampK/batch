@@ -38,8 +38,13 @@ jobRange=0-0
 #partition=long
 #partition=main
 partition=debug
-system=auau
+#system=auau
 #system=pbpb
+system=pau
+
+[ "$system" == "pbpb" ]  && projA=208 && projZ=82&& targetA=208 && targetZ=82
+[ "$system" == "auau" ]  && projA=197 && projZ=79&& targetA=197 && targetZ=79
+[ "$system" == "pau" ]  && projA=1 && projZ=1 && targetA=197 && targetZ=79
 
 [ "$partition" == "debug" ] && time=0:20:00
 [ "$partition" == "main" ] && time=8:00:00
@@ -71,9 +76,6 @@ mkdir -p $log_dir
 rsync -av $source_dir_orig/ $source_dir/
 
 mv $source_dir/inputfile.template $source_dir/inputfile
-
-[ "$system" == "pbpb" ] && targetA=208 && targetZ=82 && projA=208 && projZ=82
-[ "$system" == "auau" ] && targetA=197 && targetZ=79 && projA=197 && projZ=79
 
 sed -i -- "s~targetA~$targetA~g" $source_dir/inputfile
 sed -i -- "s~targetZ~$targetZ~g" $source_dir/inputfile
