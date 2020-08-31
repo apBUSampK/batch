@@ -45,7 +45,7 @@ if [ ${run_reco} == 1 ] && [ ! -e reco.log.gz ]; then
   rm run_reco_event.C
 fi
 
-if [ ${run_treemaker} == 1 ] && [ -e reco.log.gz ] && [ ! -e tree.log.gz ]; then 
+if [ ${run_treemaker} == 1 ] && [ -e reco.log.gz ]; then 
   cp -v ../macro/run_treemaker.C .
   sed -i -- "s~TASKID~${taskId}~g" run_treemaker.C
   echo Execute: ${job_out_dir}/run_treemaker.C
