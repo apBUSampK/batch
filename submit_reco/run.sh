@@ -240,7 +240,7 @@ if [ ${run_reco} == 1 ];then
   #make local copy of reconstruction macro
   rsync -v ${VMCWORKDIR}/macro/run/run_reco_event.C ${out_dir}/macro
   #change geometry setup
-  sed -i -- "s~// CbmSetup::Instance()->SetActive(EsystemId, Bool_t)~${set_setup}~g" $out_dir/macro/run_reco_event.C
+  sed -i -- "s~// CbmSetup::Instance()->SetActive(ESystemId, Bool_t)~${set_setup}~g" $out_dir/macro/run_reco_event.C
   #set paths to transport and parameter files produced in case of embedding on digitization stage
   if [ ! -z ${emb_input} ] || [ ! -z ${bg_input} ];then
     sed -i -- "s~dataset + \".tra.root\"~\"${main_input_dir}/TASKID/TASKID.tra.root\"~g" ${out_dir}/macro/run_reco_event.C
@@ -252,7 +252,7 @@ if [ ${run_treemaker} == 1 ];then
   #make local copy of converter macro
   rsync -v ${VMCWORKDIR}/analysis/PWGC2F/flow/DataTreeCbmInterface/macro/run_treemaker.C ${out_dir}/macro
   #change geometry setup
-  sed -i -- "s~// CbmSetup::Instance()->SetActive(EsystemId, Bool_t)~${set_setup}~g" $out_dir/macro/run_treemaker.C
+  sed -i -- "s~// CbmSetup::Instance()->SetActive(ESystemId, Bool_t)~${set_setup}~g" $out_dir/macro/run_treemaker.C
   #set paths to transport, geometry and parameter files produced in case of embedding on digitization stage
   if [ ! -z ${emb_input} ] || [ ! -z ${bg_input} ];then
     sed -i -- "s~dataSet + \".tra.root\"~\"${main_input_dir}/TASKID/TASKID.tra.root\"~g" ${out_dir}/macro/run_treemaker.C
@@ -270,4 +270,4 @@ if [ ${batch} == 0 ];then
   export SLURM_ARRAY_TASK_ID=${jobRange}
   . run_sim_reco.sh &
 fi
-[ ${batch} == 1 ] && sbatch --mem=12G -J ${job_name} -a ${jobRange} -p ${partition} -t ${time} -o ${log_dir}/%a_%A.o -e ${log_dir}/%a_%A.e run_sim_reco.sh
+[ ${batch} == 1 ] && sbatch -A cbm --mem=12G -J ${job_name} -a ${jobRange} -p ${partition} -t ${time} -o ${log_dir}/%a_%A.o -e ${log_dir}/%a_%A.e run_sim_reco.sh
