@@ -1,8 +1,8 @@
 #!/bin/bash
 
 taskId=${SLURM_ARRAY_TASK_ID}
-taskId5=$(printf "%05d" ${taskId})
-plutoFile=${pluto_path}${taskId5}.root
+#taskId5=$(printf "%05d" ${taskId})
+plutoFile=${pluto_path}${taskId}.root
  
 input_file=${input_file}${taskId}.root
 job_out_dir=${out_dir}/${taskId}

@@ -38,8 +38,8 @@ main_input=urqmd
 export pluto_signal=phi
 #export pluto_signal=etap
 #export pluto_signal=rho0
-#export pluto_signal=inmed_had_epem_12gev
-#export pluto_signal=qgp_epem_12gev
+#export pluto_signal=inmed_had_epem
+#export pluto_signal=qgp_epem
 urqmd_eos=0
 embed_pluto_during_transport=1
 
