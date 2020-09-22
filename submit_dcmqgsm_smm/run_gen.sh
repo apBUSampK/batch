@@ -26,6 +26,8 @@ $source_dir/dcmqgsmfragments/bin/re-cas-smm > re-cas-smm.out
  
 mv CAS-SMM-evt.out $datfile
 mv outfile.r12 $datfile_pure
+gzip -f $datfile
+gzip -f $datfile_pure
 
 source $root_config
 source $mcini_config
@@ -37,7 +39,7 @@ do
   mv $rootfile"_"$i.root $outdir_root/${outfilenamemask}_$(( $start_number + $i )).root;
 done
 
-[ $remove_logs == "yes" ] && rm $log_dir/$filenum 
+[ $remove_logs == "yes" ] && rm -rf $log_dir/$filenum 
 
 elapsed=$(expr $SECONDS - $elapsed)
 echo "Done!"

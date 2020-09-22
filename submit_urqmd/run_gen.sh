@@ -26,6 +26,7 @@ rootfile=$outdir_root/${outfilenamemask}_$filenum.root
 
 ${source_dir}/urqmd-3.4/runqmd.bash
 mv test.f14 $datfile
+gzip -f $datfile
 
 which root
 
@@ -33,7 +34,7 @@ echo $events_per_file events
 
 $unigen_path/bin/urqmd2u $datfile $rootfile $events_per_file
 
-rm -r ${log_dir}/${filenum}
+[ $remove_logs == "yes" ] && rm -r ${log_dir}/${filenum}
 
 elapsed=$(expr $SECONDS - $elapsed)
 echo "Done!"

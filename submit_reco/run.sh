@@ -1,11 +1,11 @@
-#pbeam=3.3
+pbeam=3.3
 #pbeam=5.36
-pbeam=12
+#pbeam=12
 #pbeam=40
 #pbeam=158
 batch=1
-export nEvents=1000
-jobRange=201-600
+export nEvents=2000
+jobRange=1-250
 export run_transport=1
 export run_digi=1
 export run_reco=1
@@ -20,26 +20,26 @@ targetThickness=25 # mkm
 release=apr20
 build=fr_18.2.1_fs_jun19p1
 
-partition=debug
+#partition=debug
 #partition=main
-#partition=long
+partition=long
  
 geant_version=4
 #physicsList=FTFP_BERT_EMV #optional
-#main_input=dcmqgsm_smm
+main_input=dcmqgsm_smm
 #main_input=dcmqgsm_smm_pluto
-main_input=urqmd
+#main_input=urqmd
 #main_input=pluto
 #main_input=eDelta
 #emb_input=pluto
 #bg_input=eDelta
-#export pluto_signal=w
-#export pluto_signal=wdalitz
-export pluto_signal=phi
-#export pluto_signal=etap
-#export pluto_signal=rho0
-#export pluto_signal=inmed_had_epem
-#export pluto_signal=qgp_epem
+export pluto_signal=w # 1-1000 # 1-500
+#export pluto_signal=wdalitz # 1001-2000 # 501-1000
+#export pluto_signal=etap # 2001-3000 # 1001-1500
+#export pluto_signal=phi # 3001-4000 # 1501-2000
+#export pluto_signal=rho0 # 4001-5000 # 2001-2500
+#export pluto_signal=inmed_had_epem # 5001-7500 # 2501-3750
+#export pluto_signal=qgp_epem # 7501-10000 # 3751-5000
 urqmd_eos=0
 embed_pluto_during_transport=1
 
@@ -50,14 +50,19 @@ export delete_sim_files=0
 [ ${partition} == long ] && time=1-00:00:00
 
 system=auau
-#centrality=mbias 
-centrality=centr_0_10
+
+centrality=mbias 
+#centrality=centr_0_10
 
 export base_setup=sis100_electron
 #export base_setup=sis100_electron_sts_long
 
 
 cbmroot_config=/lustre/cbm/users/ogolosov/soft/cbmroot/${release}/${build}/config.sh
+source_dir=/lustre/cbm/users/${USER}/mc/macros/submit_reco/
+user_mc_dir=/lustre/cbm/users/${USER}/mc
+
+batch_script=${source_dir}/run_sim_reco.sh
 
 #choose psd tag
 [ $nPSDmodules == 44 ] && [ $holeDiameter == 20 ] && psdTag=v18e
@@ -104,15 +109,12 @@ eos=""
 [ ${main_input} == urqmd ] && main_input_version=v3.4 && eos=_eos${urqmd_eos} && main_input_file_name=urqmd
 [ ${main_input} == dcmqgsm_smm ] && main_input_file_name=dcmqgsm
 
-
-user_mc_dir=/lustre/cbm/users/${USER}/mc
 export input_file=/lustre/cbm/users/ogolosov/mc/generators/${main_input}/${main_input_version}/${system}/pbeam${pbeam}agev${eos}/${centrality}/root/${main_input_file_name}_
 
 export pluto_path=/lustre/cbm/users/ogolosov/mc/generators/pluto/${system}/pbeam${pbeam}agev/${pluto_signal}/${pluto_signal}_
-[ ${main_input} == pluto ] $$ export input_file=${pluto_path}
+[ ${main_input} == pluto ] && export input_file=${pluto_path}
 [ ${embed_pluto_during_transport} == 1 ] && main_input=${main_input}_pluto_${pluto_signal}
 
-export source_dir=${user_mc_dir}/macros/submit_reco/
 pre_out_dir=${user_mc_dir}/cbmsim/${release}_${build}
 post_out_dir=${system}/${pbeam}agev/${centrality}/${setup}${postfix}/TGeant${geant_version}
 export main_input_dir=${pre_out_dir}/${main_input}/${post_out_dir}
@@ -159,8 +161,8 @@ mkdir -p ${tree_dir}
 source ${cbmroot_config}
 
 #make local copies of macros and scripts
-rsync -v run.sh ${out_dir}/macro
-rsync -v run_sim_reco.sh ${out_dir}/macro
+rsync -v $0 ${out_dir}/macro
+rsync -v ${batch_script} ${out_dir}/macro
 
 
 if [ ${run_transport} == 1 ] || [ ${run_treemaker} == 1 ];then
@@ -268,6 +270,6 @@ job_name=sim_${pbeam}
 
 if [ ${batch} == 0 ];then
   export SLURM_ARRAY_TASK_ID=${jobRange}
-  . run_sim_reco.sh &
+  . ${batch_script} &
 fi
-[ ${batch} == 1 ] && sbatch -A cbm --mem=12G -J ${job_name} -a ${jobRange} -p ${partition} -t ${time} -o ${log_dir}/%a_%A.o -e ${log_dir}/%a_%A.e run_sim_reco.sh
+[ ${batch} == 1 ] && sbatch -A cbm --mem=12G -J ${job_name} -a ${jobRange} -p ${partition} -t ${time} -o ${log_dir}/%a_%A.o -e ${log_dir}/%a_%A.e ${batch_script}

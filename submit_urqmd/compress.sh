@@ -16,20 +16,17 @@ rm -rf src
 
 echo zipping dat files
 date
-for f in dat/dcmqgsm_*.dat;
+for f in dat/urqmd_*.dat;
 do 
   gzip -f $f;
 done
 date
 
-echo tarring dat_pure folder
-\time -f "%E" tar -cf dat_pure.tar dat_pure
+echo tarring dat folder
+\time -f "%E" tar -cf dat.tar dat
 
 echo removing log folder
 \time -f "%E" rm -fr log
-
-echo removing dati_pure folder
-\time -f "%E" rm -fr dat_pure
 
 echo removing dat folder
 \time -f "%E" rm -fr dat

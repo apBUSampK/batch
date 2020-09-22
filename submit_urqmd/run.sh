@@ -10,7 +10,7 @@
 #pbeam=6
 #pbeam=8
 #pbeam=10
-#pbeam=12
+pbeam=12
 
 #ags:
 #pbeam=2.78
@@ -23,7 +23,7 @@
 
 #star
 #pbeam=30.65
-pbeam=69.55
+#pbeam=69.55
 #pbeam=111.13
 
 #na49/61:
@@ -33,14 +33,18 @@ pbeam=69.55
 #pbeam=158
 
 eos=0
-events_per_file=2 # set double to get desired amount after removing empty events
-jobRange=0-0
+events_per_file=2000 # set double to get desired amount after removing empty events
+jobRange=1-1000
 #partition=long
-#partition=main
-partition=debug
-#system=auau
+partition=main
+#partition=debug
+system=auau
 #system=pbpb
-system=pau
+#system=pau
+
+#seed=$(expr $SECONDS / 2)
+seed=0
+remove_logs=yes
 
 [ "$system" == "pbpb" ]  && projA=208 && projZ=82&& targetA=208 && targetZ=82
 [ "$system" == "auau" ]  && projA=197 && projZ=79&& targetA=197 && targetZ=79
@@ -56,11 +60,9 @@ system=pau
 
 source_dir_orig=/lustre/cbm/users/ogolosov/mc/macros/submit_urqmd
 
-user=$USER  # test it
-
 root_config=/cvmfs/fairroot.gsi.de/fairsoft/jun19p1/bin/thisroot.sh
 unigen_path=/lustre/cbm/users/ogolosov/soft/UniGen
-outdir="/lustre/cbm/users/$user/mc/generators/urqmd/v3.4/"$system"/pbeam"$pbeam"agev_eos"$eos"/mbias"
+outdir="/lustre/cbm/users/$USER/mc/generators/urqmd/v3.4/"$system"/pbeam"$pbeam"agev_eos"$eos"/mbias"
 outdir_root="$outdir/root/"
 outdir_dat="$outdir/dat/"
 source_dir="$outdir/src/"
@@ -89,10 +91,8 @@ currentDir=`pwd`
 echo "current dir:" $currentDir
 
 run_gen="$source_dir/run_gen.sh"
-#seed=$(expr $SECONDS / 2)
-seed=0
 
-sbatch -J uqmd_$pbeam --mem=8G -o $log_dir/%a_%A.o -e $log_dir/%a_%A.e -p $partition -t $time -a $jobRange -D $outdir --export=root_config=$root_config,unigen_path=$unigen_path,outdir_dat=$outdir_dat,outdir_root=$outdir_root,log_dir=$log_dir,source_dir=$source_dir,seed=$seed,pbeam=$pbeam,events_per_file=$events_per_file $run_gen
+sbatch -J uqmd_$pbeam --mem=8G -o $log_dir/%a_%A.o -e $log_dir/%a_%A.e -p $partition -t $time -a $jobRange -D $outdir --export=root_config=$root_config,unigen_path=$unigen_path,outdir_dat=$outdir_dat,outdir_root=$outdir_root,log_dir=$log_dir,source_dir=$source_dir,seed=$seed,pbeam=$pbeam,events_per_file=$events_per_file,remove_logs=$remove_logs $run_gen
 
 
 echo "========================================================"
