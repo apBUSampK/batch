@@ -1,11 +1,11 @@
-pbeam=3.3
+#pbeam=3.3
 #pbeam=5.36
-#pbeam=12
+pbeam=12
 #pbeam=40
 #pbeam=158
-batch=1
-export nEvents=2000
-jobRange=1-250
+batch=0
+export nEvents=1
+jobRange=5001
 export run_transport=1
 export run_digi=1
 export run_reco=1
@@ -26,20 +26,23 @@ partition=long
  
 geant_version=4
 #physicsList=FTFP_BERT_EMV #optional
-main_input=dcmqgsm_smm
+#main_input=dcmqgsm_smm
 #main_input=dcmqgsm_smm_pluto
-#main_input=urqmd
+main_input=urqmd
 #main_input=pluto
 #main_input=eDelta
 #emb_input=pluto
 #bg_input=eDelta
-export pluto_signal=w # 1-1000 # 1-500
+#export pluto_signal=w # 1-1000 # 1-500
 #export pluto_signal=wdalitz # 1001-2000 # 501-1000
 #export pluto_signal=etap # 2001-3000 # 1001-1500
 #export pluto_signal=phi # 3001-4000 # 1501-2000
 #export pluto_signal=rho0 # 4001-5000 # 2001-2500
-#export pluto_signal=inmed_had_epem # 5001-7500 # 2501-3750
+export pluto_signal=inmed_had_epem # 5001-7500 # 2501-3750
 #export pluto_signal=qgp_epem # 7501-10000 # 3751-5000
+
+export offset=5000
+
 urqmd_eos=0
 embed_pluto_during_transport=1
 
@@ -51,8 +54,8 @@ export delete_sim_files=0
 
 system=auau
 
-centrality=mbias 
-#centrality=centr_0_10
+#centrality=mbias 
+centrality=centr_0_10
 
 export base_setup=sis100_electron
 #export base_setup=sis100_electron_sts_long
@@ -109,10 +112,10 @@ eos=""
 [ ${main_input} == urqmd ] && main_input_version=v3.4 && eos=_eos${urqmd_eos} && main_input_file_name=urqmd
 [ ${main_input} == dcmqgsm_smm ] && main_input_file_name=dcmqgsm
 
-export input_file=/lustre/cbm/users/ogolosov/mc/generators/${main_input}/${main_input_version}/${system}/pbeam${pbeam}agev${eos}/${centrality}/root/${main_input_file_name}_
+export inputFile=/lustre/cbm/users/ogolosov/mc/generators/${main_input}/${main_input_version}/${system}/pbeam${pbeam}agev${eos}/${centrality}/root/${main_input_file_name}
 
-export pluto_path=/lustre/cbm/users/ogolosov/mc/generators/pluto/${system}/pbeam${pbeam}agev/${pluto_signal}/${pluto_signal}_
-[ ${main_input} == pluto ] && export input_file=${pluto_path}
+export plutoPath=/lustre/cbm/users/ogolosov/mc/generators/pluto/${system}/pbeam${pbeam}agev/${pluto_signal}/${pluto_signal}
+[ ${main_input} == pluto ] && export inputFile=${plutoPath}
 [ ${embed_pluto_during_transport} == 1 ] && main_input=${main_input}_pluto_${pluto_signal}
 
 pre_out_dir=${user_mc_dir}/cbmsim/${release}_${build}
@@ -128,7 +131,7 @@ export tree_dir=${out_dir}/tree
 log_dir=${out_dir}/log
 
 echo cbmroot_config: ${cbmroot_config}
-echo input_file: ${input_file}
+echo inputFile: ${inputFile}
 echo emb_input_dir: ${emb_input_dir}
 echo bg_input_dir: ${bg_input_dir}
 echo source_dir: ${source_dir}
