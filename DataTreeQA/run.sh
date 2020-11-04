@@ -42,4 +42,4 @@ mkdir -p $out_dir
 mkdir -p $log_dir
 split -n l/$n_jobs -d -a 4 --additional-suffix=.list $file_list $out_dir/
 
-sbatch -J DTQA_$pbeam --mem=8G -p $partition -a 0-$(expr $n_jobs - 1) -t $time -o $out_dir/%a_%A.o -e $out_dir/%a_%A.e -D $exe_dir --export=root_config=$root_config,ref_file_list=$ref_file_list,out_dir=$out_dir,config_file=$config_file,config_name=$config_name,cuts_config=$cuts_config,log_dir=$log_dir run_kronos.sh
+sbatch -J DTQA_$pbeam --mem=8G -p $partition -a 0-$(expr $n_jobs - 1) -t $time -o $out_dir/%a_%A.log -D $exe_dir --export=root_config=$root_config,ref_file_list=$ref_file_list,out_dir=$out_dir,config_file=$config_file,config_name=$config_name,cuts_config=$cuts_config,log_dir=$log_dir run_kronos.sh
