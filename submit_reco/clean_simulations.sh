@@ -26,7 +26,6 @@ mv -v ${firstNumber}/${firstNumber}.KFeff_MC.txt ${qa_folder}
 mv -v ${firstNumber}/${firstNumber}.event.raw.moni.root ${qa_folder}
 mv -v ${firstNumber}/${firstNumber}.rec.monitor.root ${qa_folder}
 mv -v ${firstNumber}/FairRunInfo* ${qa_folder}
-mv -v ${firstNumber}/*.par* ${qa_folder}
 mv -v macro/test.geo.root ${qa_folder}
 mv -v macro/gphysi.dat ${qa_folder}
 
@@ -56,7 +55,7 @@ rm */TRhistos.root
 rm */*.event.raw.moni.root
 rm */*.rec.monitor.root
 rm */FairRunInfo*
-rm */*.par*
+rm */*.par
 rm */EdepHistos.root
 rm */L1_histo.root
 rm */TRhistos.root

@@ -1,37 +1,33 @@
 #!/bin/bash
 
 taskId=${SLURM_ARRAY_TASK_ID}
-plutoFileNumber=$(printf "%05d" $((${taskId}-${offset})))
-plutoFileFull=${plutoPath}_${plutoFileNumber}.root
-plutoFile=$(basename ${plutoFileFull})
  
 inputFile=${inputFile}_${taskId}.root
 job_out_dir=${out_dir}/${taskId}
-
-echo inputFile=${inputFile}
-echo plutoFile=${plutoFile}
 
 mkdir -p ${job_out_dir}
 cd ${job_out_dir}
 ln -s ${VMCWORKDIR}/macro/run/.rootrc .
 
-
 elapsed=$SECONDS
 
 if [ ${run_transport} == 1 ] && [ ! -e transport.log.gz ]; then 
   cp -v ../macro/run_transport.C .
-  if [ -e ${plutoFileFull} ]; then 
-    plutoFile=${plutoFileFull} 
-  else
+  plutoFileNumber=$((${taskId}-${offset}))
+  unzip ${plutoPath}.zip *_${plutoFileNumber}.root 
+  plutoFile=$(ls ${PWD}/*_${plutoFileNumber}.root)
+  if [ -z ${plutoFile} ]; then
+    plutoFileNumber=$(printf "%05d" ${plutoFileNumber})
     unzip ${plutoPath}.zip *_${plutoFileNumber}.root 
     plutoFile=$(ls ${PWD}/*_${plutoFileNumber}.root)
   fi
   sed -i -- "s~PLUTOFILE~\"${plutoFile}\"~g" run_transport.C
+  echo inputFile=${inputFile}
+  echo plutoFile=${plutoFile}
   echo Execute: ${job_out_dir}/run_transport.C
   root -b -q "run_transport.C (${nEvents}, \"${base_setup}\", \"${taskId}\", \"${inputFile}\")" &> transport.log
   #&> /dev/null 
   gzip -f transport.log
-  cp -v FairRunInfo_${taskId}.par.root FairRunInfo_${taskId}_transport.par.root
   rm run_transport.C
   rm ${plutoFile}
 fi

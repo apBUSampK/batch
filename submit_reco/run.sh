@@ -3,6 +3,7 @@
 pbeam=12
 #pbeam=40
 #pbeam=158
+
 batch=0
 export nEvents=1
 jobRange=5001
@@ -10,6 +11,7 @@ export run_transport=1
 export run_digi=1
 export run_reco=1
 export run_treemaker=1
+field_scale=1. # optional, otherwise set as pbeam/12
 holeDiameter=20 # 0 or 6 or 20
 nPSDmodules=44 # 44 or 46 or 52
 #pipeVersion=0 #optional
@@ -25,10 +27,19 @@ build=fr_18.2.1_fs_jun19p1
 partition=long
  
 geant_version=4
-#physicsList=FTFP_BERT_EMV #optional
-#main_input=dcmqgsm_smm
+
+#optional
+#physicsList=FTFP_BERT_EMV
+#physicsList=QGSP_BERT
+#physicsList=QGSP_BERT_EMV
+#physicsList=QGSP_BIC
+#physicsList=QGSP_FTFP_BERT_EMV
+#physicsList=QGSP_INCLXX
+
+main_input=dcmqgsm_smm
+#main_input=phsd
 #main_input=dcmqgsm_smm_pluto
-main_input=urqmd
+#main_input=urqmd
 #main_input=pluto
 #main_input=eDelta
 #emb_input=pluto
@@ -54,8 +65,8 @@ export delete_sim_files=0
 
 system=auau
 
-#centrality=mbias 
-centrality=centr_0_10
+centrality=mbias 
+#centrality=centr_0_10
 
 export base_setup=sis100_electron
 #export base_setup=sis100_electron_sts_long
@@ -101,15 +112,16 @@ if [ ! -z ${psd} ] && [ ${psd} == 0 ];then
   setup=${setup}_no_psd
   set_psd="CbmSetup::Instance()->RemoveModule(ECbmModuleId::kPsd);\n  "
 fi
-[ ! -z ${physicsList}] && setup=${setup}_${physicsList}
 #[ ${main_input} == eDelta ] && set_psd="CbmSetup::Instance()->RemoveModule(ECbmModuleId::kMvd);\n  " #prevent psd response to beam nuclei
-set_scaling="CbmSetup::Instance()->SetFieldScale(${pbeam} / 12.);"
+[ -z ${field_scale} ] && field_scale=${pbeam}/12. && postfix=${postfix}_MF_$(echo "${field_scale}" | awk '{print $field_scale*100}')
+set_scaling="CbmSetup::Instance()->SetFieldScale(${field_scale});"
 set_setup="${set_mvd}${set_psd}${set_pipe}${set_scaling}"
 
 #construct input and folder names
 main_input_version=""
 eos=""
 [ ${main_input} == urqmd ] && main_input_version=v3.4 && eos=_eos${urqmd_eos} && main_input_file_name=urqmd
+[ ${main_input} == phsd ] && main_input_version=40csr && eos=_qgp_w && main_input_file_name=phsd
 [ ${main_input} == dcmqgsm_smm ] && main_input_file_name=dcmqgsm
 
 export inputFile=/lustre/cbm/users/ogolosov/mc/generators/${main_input}/${main_input_version}/${system}/pbeam${pbeam}agev${eos}/${centrality}/root/${main_input_file_name}
@@ -120,6 +132,7 @@ export plutoPath=/lustre/cbm/users/ogolosov/mc/generators/pluto/${system}/pbeam$
 
 pre_out_dir=${user_mc_dir}/cbmsim/${release}_${build}
 post_out_dir=${system}/${pbeam}agev/${centrality}/${setup}${postfix}/TGeant${geant_version}
+[ ! -z ${physicsList} ] && post_out_dir=${post_out_dir}_${physicsList}
 export main_input_dir=${pre_out_dir}/${main_input}/${post_out_dir}
 export emb_input_dir=${pre_out_dir}/${emb_input}/${post_out_dir}
 export bg_input_dir=${pre_out_dir}/${bg_input}/${post_out_dir}
@@ -188,7 +201,7 @@ if [ ${run_transport} == 1 ] || [ ${run_treemaker} == 1 ];then
   #set geant version
   sed -i -- "s~run.Run(nEvents);~run.SetEngine(kGeant${geant_version});\n  run.Run(nEvents);\n~g" ${out_dir}/macro/run_transport.C
   #change Geant4 physics list
-  g4settings="CbmGeant4Settings* g4Settings = new CbmGeant4Settings();\n  g4Settings->SetG4RunConfig(\"geomRoot\",\"${physicsList}+optical\",\"stepLimiter\");\n  g4Settings->AddG4Command(\"/mcVerbose/all 2\");\n  run.SetGeant4Settings(g4Settings);\n"
+  g4settings="CbmGeant4Settings* g4Settings = new CbmGeant4Settings();\n  g4Settings->SetG4RunConfig(\"geomRoot\",\"${physicsList}+optical\",\"stepLimiter\");\n  run.SetGeant4Settings(g4Settings);\n"
   [ ! -z ${physicsList} ] && sed -i -- "s~run.SetEngine(kGeant4);~${g4settings}  run.SetEngine(kGeant4);~g" ${out_dir}/macro/run_transport.C
   #change generator type if pluto is the main input
   [ ${main_input} == pluto ] && sed -i -- 's~run.AddInput(inFile);~run.AddInput(inFile, kPluto);~g' ${out_dir}/macro/run_transport.C
@@ -275,4 +288,4 @@ if [ ${batch} == 0 ];then
   export SLURM_ARRAY_TASK_ID=${jobRange}
   . ${batch_script} &
 fi
-[ ${batch} == 1 ] && sbatch -A cbm --mem=12G -J ${job_name} -a ${jobRange} -p ${partition} -t ${time} -o ${log_dir}/%a_%A.o -e ${log_dir}/%a_%A.e ${batch_script}
+[ ${batch} == 1 ] && sbatch -A cbm --mem=12G -J ${job_name} -a ${jobRange} -p ${partition} -t ${time} -o ${log_dir}/%a_%A.log ${batch_script}
