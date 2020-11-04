@@ -39,11 +39,11 @@ system=auau
 #system=agag
 
 events_per_file=2000
-jobRange=1-5000
+jobRange=2501 #-5000
 split_factor=1
 postfix=""
-#partition=debug
-partition=main
+partition=debug
+#partition=main
 #partition=long
 
 [ "$system" == "agag" ] && AP=108 && ZP=47 && AT=108 && ZT=47
@@ -95,9 +95,7 @@ sed -i -- "s~NEVENTS_TEMPLATE~$events_per_file~g" $source_dir/dcmqgsmfragments/i
 currentDir=`pwd`
 echo "current dir:" $currentDir
 
-seed=0
-
-sbatch -J dcm_$pbeam -p $partition -t $time -a $jobRange -D $outdir --export=root_config=$root_config,mcini_config=$mcini_config,outdir_dat=$outdir_dat,outdir_dat_pure=$outdir_dat_pure,outdir_root=$outdir_root,log_dir=$log_dir,source_dir=$source_dir,seed=$seed,pbeam=$pbeam,events_per_file=$events_per_file,split_factor=$split_factor,remove_logs=$remove_logs $run_gen
+sbatch -J dcm_$pbeam -p $partition -t $time -a $jobRange -D $outdir --export=root_config=$root_config,mcini_config=$mcini_config,outdir_dat=$outdir_dat,outdir_dat_pure=$outdir_dat_pure,outdir_root=$outdir_root,log_dir=$log_dir,source_dir=$source_dir,pbeam=$pbeam,events_per_file=$events_per_file,split_factor=$split_factor,remove_logs=$remove_logs $run_gen
 
 
 echo "========================================================"

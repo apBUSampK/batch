@@ -6,7 +6,6 @@
 outfilenamemask=dcmqgsm
 
 filenum=$(($SLURM_ARRAY_TASK_ID))
-#filenum=$(printf "%04d" "$SLURM_ARRAY_TASK_ID")
 
 mkdir -p $log_dir/$filenum
 
@@ -14,7 +13,7 @@ cd "log/$filenum/"
 echo "current dir:" $PWD
 
 elapsed=$SECONDS
-seed=$(expr $seed + $filenum)
+seed=$(perl -e 'print int rand 99999999, "\n";')
 datfile=$outdir_dat/${outfilenamemask}_$filenum.dat
 datfile_pure=$outdir_dat_pure/${outfilenamemask}_pure_$filenum.dat
 rootfile=${outfilenamemask}_$filenum
@@ -32,7 +31,7 @@ gzip -f $datfile_pure
 source $root_config
 source $mcini_config
 rsync -v $MCINI/macro/convertDCMQGSM_SMM.C $source_dir 
-root -l -b -q "$source_dir/convertDCMQGSM_SMM.C (\"$datfile\",\"$rootfile\", $events_per_file, $split_factor)" &> dat2root.log
+root -l -b -q "$source_dir/convertDCMQGSM_SMM.C (\"$datfile\",\"$rootfile\", $events_per_file, $split_factor)" #&> dat2root.log
 
 for (( i=0;i<$split_factor;i++ )); 
 do 

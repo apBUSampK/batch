@@ -5,8 +5,7 @@
 
 #cbm
 #pbeam=3.3
-#pbeam=4
-#pbeam=5.36
+#pbeam=4.4
 #pbeam=6
 #pbeam=8
 #pbeam=10
@@ -42,8 +41,6 @@ system=auau
 #system=pbpb
 #system=pau
 
-#seed=$(expr $SECONDS / 2)
-seed=0
 remove_logs=yes
 
 [ "$system" == "pbpb" ]  && projA=208 && projZ=82&& targetA=208 && targetZ=82
@@ -92,7 +89,7 @@ echo "current dir:" $currentDir
 
 run_gen="$source_dir/run_gen.sh"
 
-sbatch -J uqmd_$pbeam --mem=8G -o $log_dir/%a_%A.o -e $log_dir/%a_%A.e -p $partition -t $time -a $jobRange -D $outdir --export=root_config=$root_config,unigen_path=$unigen_path,outdir_dat=$outdir_dat,outdir_root=$outdir_root,log_dir=$log_dir,source_dir=$source_dir,seed=$seed,pbeam=$pbeam,events_per_file=$events_per_file,remove_logs=$remove_logs $run_gen
+sbatch -J uqmd_$pbeam --mem=8G -o $log_dir/%a_%A.log -p $partition -t $time -a $jobRange -D $outdir --export=root_config=$root_config,unigen_path=$unigen_path,outdir_dat=$outdir_dat,outdir_root=$outdir_root,log_dir=$log_dir,source_dir=$source_dir,pbeam=$pbeam,events_per_file=$events_per_file,remove_logs=$remove_logs $run_gen
 
 
 echo "========================================================"
