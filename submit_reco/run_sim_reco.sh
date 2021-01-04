@@ -4,7 +4,6 @@ taskId=${SLURM_ARRAY_TASK_ID}
  
 inputFile=${inputFile}_${taskId}.root
 job_out_dir=${out_dir}/${taskId}
-
 mkdir -p ${job_out_dir}
 cd ${job_out_dir}
 ln -s ${VMCWORKDIR}/macro/run/.rootrc .
@@ -60,6 +59,16 @@ if [ ${run_treemaker} == 1 ] && [ -e reco.log.gz ]; then
   rm run_treemaker.C
 fi
 
+if [ ${run_at_maker} == 1 ] && [ -e reco.log.gz ]; then
+  . ${cbmroot_with_AT_config} 
+  cp -v ../macro/run_analysis_tree_maker.C .
+  sed -i -- "s~TASKID~${taskId}~g" run_analysis_tree_maker.C
+  echo Execute: ${job_out_dir}/run_analysis_tree_maker.C
+  root -b -q "${job_out_dir}/run_analysis_tree_maker.C (${nEvents}, \"${taskId}\", \"${base_setup}\")" &> atree.log
+  gzip -f atree.log
+  mv ${taskId}.analysistree.root ${atree_dir}
+  rm run_analysis_tree_maker.C
+fi
 rm .rootrc
 
 [ ${delete_sim_files} = 1 ] && [ $(( $taskId % 100 )) -ne 0 ] && rm -r ${job_out_dir} 

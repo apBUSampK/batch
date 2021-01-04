@@ -19,12 +19,15 @@ ref_file_list=$file_list"_ref"
 [ $config_name == "cbm12" ] && config_name="cbm_12agev_config"
 [ $cuts_config == "alt" ] && cuts_config="alternative_cbm_cuts"
 [ $cuts_config == "nocuts" ] && cuts_config="default_cuts"
+[ -z $cuts_config ] && cuts_config="default_cuts"
 
-n_jobs=$(wc -l < $file_list)
-n_jobs=$(expr $n_jobs / 100)
-n_jobs=$njobs
-[ "$partition" == "debug" ] && time=0:20:00
-[ "$partition" == "main" ] && time=8:00:00
+#n_jobs=$(wc -l < $file_list)
+#n_jobs=$(expr $n_jobs / 100)
+n_jobs=1
+[ -z $njobs ] && n_jobs=$njobs
+
+[ $partition == debug ] && time=0:20:00
+[ $partition == main ] && time=8:00:00
 
 echo root_config=$root_config
 echo exe_dir=$exe_dir
@@ -42,4 +45,4 @@ mkdir -p $out_dir
 mkdir -p $log_dir
 split -n l/$n_jobs -d -a 4 --additional-suffix=.list $file_list $out_dir/
 
-sbatch -J DTQA_$pbeam --mem=8G -p $partition -a 0-$(expr $n_jobs - 1) -t $time -o $out_dir/%a_%A.log -D $exe_dir --export=root_config=$root_config,ref_file_list=$ref_file_list,out_dir=$out_dir,config_file=$config_file,config_name=$config_name,cuts_config=$cuts_config,log_dir=$log_dir run_kronos.sh
+sbatch -J DTQA_$pbeam --mem=8G -p $partition -a 0-$(expr $n_jobs - 1) -t $time -o $out_dir/%a_%A.log -D $exe_dir --export=root_config=$root_config,ref_file_list=$ref_file_list,out_dir=$out_dir,config_file=$config_file,config_name=$config_name,cuts_config=$cuts_config,log_dir=$log_dir -- run_kronos.sh

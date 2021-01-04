@@ -5,7 +5,8 @@
 #pbeam=2.34 #agag
 
 #cbm
-pbeam=3.3
+pbeam=2.3
+#pbeam=3.3
 #pbeam=5.36
 #pbeam=6
 #pbeam=8
@@ -38,9 +39,9 @@ system=auau
 #system=pbpb
 #system=agag
 
-events_per_file=2000
-jobRange=2501 #-5000
-split_factor=1
+export events_per_file=2
+jobRange=1 #-5000
+export split_factor=1
 postfix=""
 partition=debug
 #partition=main
@@ -55,20 +56,20 @@ partition=debug
 [ "$partition" == "main" ] && time=8:00:00
 [ "$partition" == "long" ] && time=1-00:00:00
 
-remove_logs="yes"
+export remove_logs= #"yes"
 
 T0=$(echo "$pbeam" | awk '{print sqrt($pbeam*$pbeam+0.938*0.938)-0.938}')
 
 source_dir_orig=/lustre/cbm/users/ogolosov/mc/macros/submit_dcmqgsm_smm
-root_config=/cvmfs/fairroot.gsi.de/fairsoft/jun19p1/bin/thisroot.sh
-mcini_config=/lustre/cbm/users/ogolosov/soft/mcini/macro/config.sh
+export root_config=/cvmfs/fairroot.gsi.de/fairsoft/jun19p1/bin/thisroot.sh
+export mcini_config=/lustre/cbm/users/ogolosov/soft/mcini/macro/config.sh
 
 outdir="/lustre/cbm/users/${USER}/mc/generators/dcmqgsm_smm/${system}/pbeam${pbeam}agev${postfix}/mbias"
-outdir_root="$outdir/root/"
-outdir_dat="$outdir/dat/"
-outdir_dat_pure="$outdir/dat_pure/"
-source_dir="$outdir/src/"
-log_dir="$outdir/log/"
+export outdir_root="$outdir/root/"
+export outdir_dat="$outdir/dat/"
+export outdir_dat_pure="$outdir/dat_pure/"
+export source_dir="$outdir/src/"
+export log_dir="$outdir/log/"
 
 mkdir -p "$outdir"
 mkdir -p $source_dir
@@ -79,12 +80,11 @@ mkdir -p $log_dir
 
 run_gen=$source_dir_orig/run_gen.sh
 rsync -a $source_dir_orig/dcmqgsmfragments $source_dir/
-rsync -v $source_dir_orig/input.inp.template $source_dir 
+rsync -v $source_dir_orig/input.inp.template $source_dir/dcmqgsmfragments/input.inp 
 rsync -v $0 $source_dir 
 rsync -v $run_gen $source_dir 
 
-mv -v $source_dir/input.inp.template $source_dir/dcmqgsmfragments/input.inp
-sed -i -- "s~SRC_PATH_TEMPLATE~$source_dir/dcmqgsmfragments~g" $source_dir/dcmqgsmfragments/input.inp
+sed -i --  "s~SRC_PATH_TEMPLATE~$source_dir/dcmqgsmfragments~g" $source_dir/dcmqgsmfragments/input.inp
 sed -i -- "s~TO_TEMPLATE~$T0~g" $source_dir/dcmqgsmfragments/input.inp
 sed -i -- "s~AP_TEMPLATE~$AP~g" $source_dir/dcmqgsmfragments/input.inp
 sed -i -- "s~AT_TEMPLATE~$AT~g" $source_dir/dcmqgsmfragments/input.inp
@@ -95,8 +95,7 @@ sed -i -- "s~NEVENTS_TEMPLATE~$events_per_file~g" $source_dir/dcmqgsmfragments/i
 currentDir=`pwd`
 echo "current dir:" $currentDir
 
-sbatch -J dcm_$pbeam -p $partition -t $time -a $jobRange -D $outdir --export=root_config=$root_config,mcini_config=$mcini_config,outdir_dat=$outdir_dat,outdir_dat_pure=$outdir_dat_pure,outdir_root=$outdir_root,log_dir=$log_dir,source_dir=$source_dir,pbeam=$pbeam,events_per_file=$events_per_file,split_factor=$split_factor,remove_logs=$remove_logs $run_gen
-
+sbatch -J dcm_$pbeam -p $partition -t $time -a $jobRange -o ${log_dir}/%a_%A.log -D $outdir -- $run_gen
 
 echo "========================================================"
 echo "Output will be written to:"

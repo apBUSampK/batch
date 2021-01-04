@@ -5,7 +5,7 @@ echo $outdir_root
 
 outfilenamemask=urqmd
 
-filenum=$(($SLURM_ARRAY_TASK_ID))
+filenum=$SLURM_ARRAY_TASK_ID
 
 mkdir -p $log_dir/$filenum
 
@@ -15,7 +15,7 @@ source $unigen_path/config/unigenlogin.sh
 
 cd "$log_dir/$filenum/"
 echo "current dir:" $PWD
-ln -s ${source_dir}/urqmd-3.4/urqmd.x86_64 .
+ln -s ${source_dir}/urqmd.x86_64 .
 ln -s ${source_dir}/inputfile .
 
 seed=$(perl -e 'print int rand 99999999, "\n";')
@@ -24,7 +24,7 @@ sed -i -- "s~seed~$seed~g" inputfile
 datfile=$outdir_dat/${outfilenamemask}_$filenum.dat
 rootfile=$outdir_root/${outfilenamemask}_$filenum.root
 
-${source_dir}/urqmd-3.4/runqmd.bash
+${source_dir}/runqmd.bash
 mv test.f14 $datfile
 
 which root
@@ -39,4 +39,3 @@ gzip -f $datfile
 elapsed=$(expr $SECONDS - $elapsed)
 echo "Done!"
 echo Elapsed time: $(expr $elapsed / 60) minutes
-
