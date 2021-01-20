@@ -16,8 +16,8 @@ rootfile=${outfilenamemask}_$filenum
 start_number=$(( $filenum * $split_factor ))
 
 mv $datfile_pure outfile.r12
-echo $source_dir/dcmqgsmfragments/input.inp | $source_dir/dcmqgsmfragments/bin/hypcoa-b1n $seed
-$source_dir/dcmqgsmfragments/bin/re-cas-smm
+echo $source_dir/dcmqgsm_smm_stable/input.inp | $source_dir/dcmqgsm_smm_stable/bin/hypcoa-b1n $seed
+$source_dir/dcmqgsm_smm_stable/bin/re-cas-smm
  
 mv CAS-SMM-evt.out $datfile
 mv outfile.r12 $datfile_pure

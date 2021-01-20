@@ -60,7 +60,7 @@ export remove_logs= #"yes"
 
 T0=$(echo "$pbeam" | awk '{print sqrt($pbeam*$pbeam+0.938*0.938)-0.938}')
 
-source_dir_orig=/lustre/cbm/users/ogolosov/mc/macros/submit_dcmqgsm_smm
+model_source=/lustre/cbm/users/ogolosov/mc/macros/submit_dcmqgsm_smm/dcmqgsm_smm_stable
 export root_config=/cvmfs/fairroot.gsi.de/fairsoft/jun19p1/bin/thisroot.sh
 export mcini_config=/lustre/cbm/users/ogolosov/soft/mcini/macro/config.sh
 
@@ -78,19 +78,21 @@ mkdir -p $outdir_dat
 mkdir -p $outdir_dat_pure
 mkdir -p $log_dir
 
-run_gen=$source_dir_orig/run_gen.sh
-rsync -a $source_dir_orig/dcmqgsmfragments $source_dir/
-rsync -v $source_dir_orig/input.inp.template $source_dir/dcmqgsmfragments/input.inp 
+script_path=$(dirname ${0})
+run_gen=${script_path}/run_gen.sh
+rsync -a --exclude=src ${model_source} $source_dir/
+rsync -v ${script_path}/input.inp.template $source_dir/dcmqgsm_smm_stable/input.inp 
 rsync -v $0 $source_dir 
 rsync -v $run_gen $source_dir 
+run_gen=${source_dir}/$(basename ${run_gen})
 
-sed -i --  "s~SRC_PATH_TEMPLATE~$source_dir/dcmqgsmfragments~g" $source_dir/dcmqgsmfragments/input.inp
-sed -i -- "s~TO_TEMPLATE~$T0~g" $source_dir/dcmqgsmfragments/input.inp
-sed -i -- "s~AP_TEMPLATE~$AP~g" $source_dir/dcmqgsmfragments/input.inp
-sed -i -- "s~AT_TEMPLATE~$AT~g" $source_dir/dcmqgsmfragments/input.inp
-sed -i -- "s~ZP_TEMPLATE~$ZP~g" $source_dir/dcmqgsmfragments/input.inp
-sed -i -- "s~ZT_TEMPLATE~$ZT~g" $source_dir/dcmqgsmfragments/input.inp
-sed -i -- "s~NEVENTS_TEMPLATE~$events_per_file~g" $source_dir/dcmqgsmfragments/input.inp
+sed -i -- "s~SRC_PATH_TEMPLATE~$source_dir/dcmqgsm_smm_stable~g" $source_dir/dcmqgsm_smm_stable/input.inp
+sed -i -- "s~TO_TEMPLATE~$T0~g" $source_dir/dcmqgsm_smm_stable/input.inp
+sed -i -- "s~AP_TEMPLATE~$AP~g" $source_dir/dcmqgsm_smm_stable/input.inp
+sed -i -- "s~AT_TEMPLATE~$AT~g" $source_dir/dcmqgsm_smm_stable/input.inp
+sed -i -- "s~ZP_TEMPLATE~$ZP~g" $source_dir/dcmqgsm_smm_stable/input.inp
+sed -i -- "s~ZT_TEMPLATE~$ZT~g" $source_dir/dcmqgsm_smm_stable/input.inp
+sed -i -- "s~NEVENTS_TEMPLATE~$events_per_file~g" $source_dir/dcmqgsm_smm_stable/input.inp
 
 currentDir=`pwd`
 echo "current dir:" $currentDir
