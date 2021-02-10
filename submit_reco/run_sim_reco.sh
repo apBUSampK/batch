@@ -10,7 +10,8 @@ ln -s ${VMCWORKDIR}/macro/run/.rootrc .
 
 elapsed=$SECONDS
 
-if [ ${run_transport} == 1 ] && [ ! -e transport.log.gz ]; then 
+if [ ${run_transport} == 1 ] && [ ! -e transport.log.gz ]; then
+  echo VMCWORKDIR: ${VMCWORKDIR}
   cp -v ../macro/run_transport.C .
   plutoFileNumber=$((${taskId}-${offset}))
   unzip ${plutoPath}.zip *_${plutoFileNumber}.root 
@@ -32,6 +33,7 @@ if [ ${run_transport} == 1 ] && [ ! -e transport.log.gz ]; then
 fi
 
 if [ ${run_digi} == 1 ] && [ ! -e digi.log.gz ]; then 
+  echo VMCWORKDIR: ${VMCWORKDIR}
   cp -v ../macro/run_digi.C .
   sed -i -- "s~TASKID~${taskId}~g" run_digi.C
   echo Execute: ${job_out_dir}/run_digi.C
@@ -41,6 +43,7 @@ if [ ${run_digi} == 1 ] && [ ! -e digi.log.gz ]; then
 fi
 
 if [ ${run_reco} == 1 ] && [ ! -e reco.log.gz ]; then  
+  echo VMCWORKDIR: ${VMCWORKDIR}
   cp -v ../macro/run_reco_event.C .
   sed -i -- "s~TASKID~${taskId}~g" run_reco_event.C
   echo Execute: ${job_out_dir}/run_reco_event.C
@@ -50,6 +53,7 @@ if [ ${run_reco} == 1 ] && [ ! -e reco.log.gz ]; then
 fi
 
 if [ ${run_treemaker} == 1 ] && [ -e reco.log.gz ]; then 
+  echo VMCWORKDIR: ${VMCWORKDIR}
   cp -v ../macro/run_treemaker.C .
   sed -i -- "s~TASKID~${taskId}~g" run_treemaker.C
   echo Execute: ${job_out_dir}/run_treemaker.C
@@ -61,6 +65,7 @@ fi
 
 if [ ${run_at_maker} == 1 ] && [ -e reco.log.gz ]; then
   . ${cbmroot_with_AT_config} 
+  echo VMCWORKDIR: ${VMCWORKDIR}
   cp -v ../macro/run_analysis_tree_maker.C .
   sed -i -- "s~TASKID~${taskId}~g" run_analysis_tree_maker.C
   echo Execute: ${job_out_dir}/run_analysis_tree_maker.C

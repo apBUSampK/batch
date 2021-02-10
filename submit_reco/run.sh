@@ -7,37 +7,22 @@ pbeam=12
 #pbeam=158
 
 batch=1
-export nEvents=1
-jobRange=5001
+export nEvents=1000
+jobRange=1-50
 export run_transport=1
 export run_digi=1
 export run_reco=1
 export run_treemaker=1
 export run_at_maker=1
-#field_scale=1. # optional, otherwise set to pbeam/12
-holeDiameter=20 # 0 or 6 or 20
-nPSDmodules=44 # 44 or 46 or 52
-#pipeVersion=0 #optional
-#mvd=0 #optional
-#psd=0 #optional
-targetThickness=25 # mkm 
-postfix=_test
+postfix= #_test
 release=apr20
 build=fr_18.2.1_fs_jun19p1
 
 #partition=debug
-partition=main
-#partition=long
+#partition=main
+partition=long
  
-geant_version=3
-
-#optional
-#physicsList=FTFP_BERT_EMV
-#physicsList=QGSP_BERT
-#physicsList=QGSP_BERT_EMV
-#physicsList=QGSP_BIC
-#physicsList=QGSP_FTFP_BERT_EMV
-#physicsList=QGSP_INCLXX
+geant_version=4
 
 main_input=dcmqgsm_smm
 #main_input=phsd
@@ -45,69 +30,95 @@ main_input=dcmqgsm_smm
 #main_input=urqmd
 #main_input=pluto
 #main_input=eDelta
-#emb_input=pluto
-#bg_input=eDelta
-#export pluto_signal=w # 1-1000 # 1-500
-#export pluto_signal=wdalitz # 1001-2000 # 501-1000
-#export pluto_signal=etap # 2001-3000 # 1001-1500
-#export pluto_signal=phi # 3001-4000 # 1501-2000
-#export pluto_signal=rho0 # 4001-5000 # 2001-2500
-export pluto_signal=inmed_had_epem # 5001-7500 # 2501-3750
-#export pluto_signal=qgp_epem # 7501-10000 # 3751-5000
-
-export offset=5000
-
-urqmd_eos=0
-embed_pluto_during_transport=1
-
-export delete_sim_files=0
-
-[ ${partition} == debug ] && time=0:20:00
-[ ${partition} == main ] && time=8:00:00
-[ ${partition} == long ] && time=1-00:00:00
-
-system=auau
 
 centrality=mbias 
 #centrality=centr_0_10
 
+#emb_input=pluto
+#bg_input=eDelta
+
+export pluto_signal=w # 1-1000 # 1-500
+#export pluto_signal=wdalitz # 1001-2000 # 501-1000
+#export pluto_signal=etap # 2001-3000 # 1001-1500
+#export pluto_signal=phi # 3001-4000 # 1501-2000
+#export pluto_signal=rho0 # 4001-5000 # 2001-2500
+#export pluto_signal=inmed_had_epem # 5001-7500 # 2501-3750
+#export pluto_signal=qgp_epem # 7501-10000 # 3751-5000
+
+export offset=0
+
+embed_pluto_during_transport=1
+
+system=auau
+
+urqmd_eos=0
+
 export base_setup=sis100_electron
 #export base_setup=sis100_electron_sts_long
 
+#field_scale=0.56 # optional, otherwise set to pbeam/12
+#mvd=0 #optional
+#psd=0 #optional
+targetThickness=25 # mkm - optional 
 
-cbmroot_config=/lustre/cbm/users/ogolosov/soft/cbmroot/${release}/${build}/install/bin/CbmRootConfig.sh
+# PSD tag - optional
+#psdTag=v18f # 44 modules 6 cm hole
+#psdTag=v18g # 44 modules no hole
+#psdTag=v18h # 52 modules
+#psdTag=v18i # ideal 20 cm hole
+#psdTag=v18j # ideal 6 cm hole
+#psdTag=v18k # ideal no hole
+#psdTag=v18l # 46 modules
+#psdTag=v18e_p3.3_45 # 44 modules 20 cm hole (45% field at 3.3 agev)
+#psdTag=v18e_p3.3_56 # 44 modules 20 cm hole (56% field at 3.3 agev)
+psdTag=v18e_z_10.5 # 44 modules 20 cm hole (10.5 m from target)
+#psdTag=v18e_p3.3_45_z_10.5 # 44 modules 20 cm hole (10.5 m from target, 45% field at 3.3 agev)
+#psdTag=v18e_p3.3_56_z_10.5 # 44 modules 20 cm hole (10.5 m from target, 56% field at 3.3 agev)
+
+# PIPE tag - optional
+#pipeTag=v18a
+#pipeTag=v18b
+#pipeTag=v18c
+
+# TOF tag - optional
+tofTag=v16d_1e_z_6.9
+
+# Physics list - optional
+#physicsList=FTFP_BERT_EMV
+#physicsList=QGSP_BERT
+#physicsList=QGSP_BERT_EMV
+#physicsList=QGSP_BIC
+#physicsList=QGSP_FTFP_BERT_EMV
+#physicsList=QGSP_INCLXX
+
+export delete_sim_files=0
+
+cbmroot_config=/lustre/cbm/users/ogolosov/soft/cbmroot/${release}/${build}/bin/CbmRootConfig.sh
 export cbmroot_with_AT_config=/lustre/cbm/users/ogolosov/soft/cbmroot/trunk/fr_18.2.1_fs_jun19p1/install/bin/CbmRootConfig.sh
 source_dir=/lustre/cbm/users/${USER}/mc/macros/submit_reco/
 user_mc_dir=/lustre/cbm/users/${USER}/mc
 
 batch_script=${source_dir}/run_sim_reco.sh
 
-#choose psd tag
-[ $nPSDmodules == 44 ] && [ $holeDiameter == 20 ] && psdTag=v18e
-[ $nPSDmodules == 44 ] && [ $holeDiameter == 6 ] && psdTag=v18f
-[ $nPSDmodules == 44 ] && [ $holeDiameter == 0 ] && psdTag=v18g
-[ $nPSDmodules == 52 ] && holeDiameter=20 && psdTag=v18h
-[ $nPSDmodules == 1 ] && [ $holeDiameter == 20 ] && psdTag=v18i
-[ $nPSDmodules == 1 ] && [ $holeDiameter == 6 ] && psdTag=v18j
-[ $nPSDmodules == 1 ] && [ $holeDiameter == 0 ] && psdTag=v18k
-[ $nPSDmodules == 46 ] && holeDiameter=20 && psdTag=v18l
-#choose pipe tag
-#[ $pipeVersion == 0 ] && pipeTag=v16b_1e
-#[ $pipeVersion == 1 ] && pipeTag=v18a
-#[ $pipeVersion == 2 ] && pipeTag=v18b
-#[ $pipeVersion == 3 ] && pipeTag=v18c
+[ ${partition} == debug ] && time=0:20:00
+[ ${partition} == main ] && time=8:00:00
+[ ${partition} == long ] && time=1-00:00:00
 
 #change geometry if needed
 setup=${base_setup}
 [ ! -z ${targetThickness} ] && setup=${setup}_target_${targetThickness}_mkm
-if [ ${psdTag} != v18e ];then
+if [ ! -z ${tofTag} ];then
+  setup=${setup}_tof_${tofTag}
+  set_tof="CbmSetup::Instance()->SetModule(ECbmModuleId::kTof, \"${tofTag}\");\n  "
+fi
+if [ ! -z ${psdTag} ];then
   setup=${setup}_psd_${psdTag}
   set_psd="CbmSetup::Instance()->SetModule(ECbmModuleId::kPsd, \"${psdTag}\");\n  "
 fi
-#if [ ${pipeTag} != v16b_1e ];then
-#  setup=${setup}_pipe_${pipeTag}
-#set_pipe="CbmSetup::Instance()->SetModule(ECbmModuleId::kPipe, \"${pipeTag}\");\n  "
-#fi
+if [ ! -z ${pipeTag} ];then
+  setup=${setup}_pipe_${pipeTag}
+set_pipe="CbmSetup::Instance()->SetModule(ECbmModuleId::kPipe, \"${pipeTag}\");\n  "
+fi
 if [ ! -z ${mvd} ] && [ ${mvd} == 0 ];then
   setup=${setup}_no_mvd
   set_mvd="CbmSetup::Instance()->RemoveModule(ECbmModuleId::kMvd);\n  "
@@ -119,7 +130,7 @@ fi
 [ -z ${field_scale} ] && field_scale=$(echo "${pbeam}" | awk '{print $pbeam/12}') 
 [ ${field_scale} != 1 ] && postfix=${postfix}_MF_$(echo "${field_scale}" | awk '{print $field_scale*100}')
 set_scaling="CbmSetup::Instance()->SetFieldScale(${field_scale});"
-set_setup="${set_mvd}${set_psd}${set_pipe}${set_scaling}"
+set_setup="${set_mvd}${set_tof}${set_psd}${set_pipe}${set_scaling}"
 
 #construct input and folder names
 main_input_version=""
@@ -183,7 +194,6 @@ source ${cbmroot_config}
 #make local copies of macros and scripts
 rsync -v $0 ${out_dir}/macro
 rsync -v ${batch_script} ${out_dir}/macro
-
 
 if [ ${run_transport} == 1 ] || [ ${run_treemaker} == 1 ];then
   #make local copy of transport macro

@@ -13,7 +13,7 @@ echo folder=${folder}
 echo firstNumber=${firstNumber}
 
 date
-. /lustre/cbm/users/ogolosov/soft/cbmroot/apr20/fr_18.2.1_fs_jun19p1/config.sh
+. /lustre/cbm/users/ogolosov/soft/cbmroot/apr20/fr_18.2.1_fs_jun19p1/bin/CbmRootConfig.sh
 
 qa_folder=param_and_QA
 mkdir -p ${qa_folder}
