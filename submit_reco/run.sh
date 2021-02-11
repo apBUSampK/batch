@@ -62,6 +62,11 @@ export base_setup=sis100_electron
 targetThickness=25 # mkm - optional 
 
 # PSD tag - optional
+#psdTag=v18e_p3.3_45 # 44 modules 20 cm hole (45% field at 3.3 agev)
+#psdTag=v18e_p3.3_56 # 44 modules 20 cm hole (56% field at 3.3 agev)
+psdTag=v18e_z_10.5 # 44 modules 20 cm hole (10.5 m from target)
+#psdTag=v18e_p3.3_45_z_10.5 # 44 modules 20 cm hole (10.5 m from target, 45% field at 3.3 agev)
+#psdTag=v18e_p3.3_56_z_10.5 # 44 modules 20 cm hole (10.5 m from target, 56% field at 3.3 agev)
 #psdTag=v18f # 44 modules 6 cm hole
 #psdTag=v18g # 44 modules no hole
 #psdTag=v18h # 52 modules
@@ -69,11 +74,6 @@ targetThickness=25 # mkm - optional
 #psdTag=v18j # ideal 6 cm hole
 #psdTag=v18k # ideal no hole
 #psdTag=v18l # 46 modules
-#psdTag=v18e_p3.3_45 # 44 modules 20 cm hole (45% field at 3.3 agev)
-#psdTag=v18e_p3.3_56 # 44 modules 20 cm hole (56% field at 3.3 agev)
-psdTag=v18e_z_10.5 # 44 modules 20 cm hole (10.5 m from target)
-#psdTag=v18e_p3.3_45_z_10.5 # 44 modules 20 cm hole (10.5 m from target, 45% field at 3.3 agev)
-#psdTag=v18e_p3.3_56_z_10.5 # 44 modules 20 cm hole (10.5 m from target, 56% field at 3.3 agev)
 
 # PIPE tag - optional
 #pipeTag=v18a
@@ -293,7 +293,7 @@ if [ ${run_at_maker} == 1 ];then
   rsync -v ${source_dir}/defineDileptons.C ${out_dir}/macro
   rsync -v ${VMCWORKDIR}/macro/analysis_tree/run_analysis_tree_maker.C ${out_dir}/macro
   #change collision info
-  sed -i -- "s~12.~${pbeam}.~g" ${out_dir}/macro/run_analysis_tree_maker.C
+  sed -i -- "s~12.~${pbeam}~g" ${out_dir}/macro/run_analysis_tree_maker.C
   #sed -i -- "s~Au+Au~${system}~g" $out_dir/macro/run_analysis_tree_maker.C
   #change geometry setup
   sed -i -- "s~CbmSetup* setup = CbmSetup::Instance();~CbmSetup* setup = CbmSetup::Instance();\n${set_setup}~g" $out_dir/macro/run_analysis_tree_maker.C
