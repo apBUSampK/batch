@@ -1,14 +1,24 @@
 {
   "accessory": {
     "nEvents": 1,
-    "run_transport": false,
-    "run_digi": false,
-    "run_reco": false,
-    "run_AT": true,
-    "transport_macro": "${VMCWORKDIR}/macro/run/run_transport_json_config.C",
-    "digi_macro": "${VMCWORKDIR}/macro/run/run_digi_json_config.C",
-    "reco_macro": "${VMCWORKDIR}/macro/run/run_reco_json_config.C",
-    "AT_macro": "${VMCWORKDIR}/macro/analysis/common/analysis_tree_converter/run_analysis_tree_maker_json_config.C"},
+    "jobRange": "1-2",
+    "logDir": "logDir",
+    "cbmRoot": "/root/desktop/soft/cbmroot/build_docker/config.sh",
+    "jobScript": "run_sim_reco.sh",
+    "jobName": "cbmsim",
+    "transport": {
+      "run": true,
+      "macro": "${VMCWORKDIR}/macro/run/run_transport_json_config.C"},
+    "digitization": {
+      "run": true,
+      "macro": "${VMCWORKDIR}/macro/run/run_digi_json_config.C"},
+    "reconstruction": {
+      "run": true,
+      "macro": "${VMCWORKDIR}/macro/run/run_reco_json_config.C"},
+    "AT": { 
+      "run": true,
+      "macro": "${VMCWORKDIR}/macro/analysis/common/analysis_tree_converter/run_analysis_tree_maker_json_config.C"}
+  },
   "logScreenLevel": "INFO",
   "logVerbosityLevel": "LOW",
   "transport": {
@@ -26,7 +36,7 @@
        "beamStartZ": -1.0}
     ],
     "output": { 
-      "path": "test",
+      "path": "scriptTest/transport/test",
       "overwrite": true
     },
     "target": {
@@ -116,7 +126,7 @@
        "treeAccessMode": "random"}
     ],
     "output": {
-      "path": "test",
+      "path": "scriptTest/digi/test",
       "overwrite": true
     },
     "geometry": {
@@ -130,7 +140,7 @@
     "nTimeSlices": -1,
     "firstTimeSlice": 0, 
     "output": {
-      "path": "test",
+      "path": "scriptTest/reco/test",
       "overwrite": true
     },
     "sEvBuildRaw": "Ideal", 
@@ -146,7 +156,7 @@
     "parPath": "", 
     "unigenFile": "${VMCWORKDIR}/input/urqmd.auau.10gev.mbias.root",
     "output": {
-      "path": "",
+      "path": "scriptTest/AT/test",
       "overwrite": false}
   }
 }
