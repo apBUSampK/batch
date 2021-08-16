@@ -11,7 +11,8 @@ function getJsonVal () {
 
 batch=false
 
-config=$1
+submit_script=${0}
+config=${1}
 jobName=$(getJsonVal "['accessory']['jobName']")
 jobRange=$(getJsonVal "['accessory']['jobRange']")
 logDir=$(getJsonVal "['accessory']['logDir']")
@@ -33,11 +34,17 @@ for step in ${steps[*]}; do
     mkdir -pv ${step_src_dir}
     cp -v ${step_macro} ${step_src_dir}
     cp -v ${config} ${step_src_dir}
+    cp -v ${submit_script} ${step_src_dir}
+    cp -v ${jobScript} ${step_src_dir}
     run_steps[${step}]=${run_step}
-    step_out_dirs[${step}]=${step_src_dir}
+    step_out_dirs[${step}]=${step_out_dir}
     step_macros[${step}]=${step_src_dir}/$(basename ${step_macro})
   fi
 done
+
+export submit_script=$(basename ${submit_script})
+export jobScript=$(basename ${jobScript})
+export config=$(basename ${config})
 
 export run_transport=${run_steps[transport]}
 export transport_out_dir=${step_out_dirs[transport]}
@@ -58,9 +65,9 @@ export AT_macro=${step_macros[AT]}
 export nEvents=$(getJsonVal "['accessory']['nEvents']")
 
 if [ ${batch} == true ];then
+  mkdir -pv ${logDir}
   sbatch -J ${jobName} -o ${logDir}/%A_%a.log -a ${jobRange} --export=ALL -- ${jobSript}
 else
-  mkdir -pv ${logDir}
   export SLURM_ARRAY_JOB_ID=jobId
   export SLURM_ARRAY_TASK_ID=taskId
   ./${jobScript}

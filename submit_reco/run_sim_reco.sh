@@ -4,21 +4,16 @@ jobId=${SLURM_ARRAY_JOB_ID}
 taskId=${SLURM_ARRAY_TASK_ID}
 
 if [ ${run_transport} == true ]; then
-  config=$(ls ${transport_out_dir}/*.json) 
-  job_src_dir=$(dirname ${transport_macro})/${jobId}
-  job_transport_macro=${job_src_dir}/$(basename ${transport_macro})
-  job_config=${job_src_dir}/$(basename ${config})
-  mkdir -pv ${job_src_dir}
-  mv -v ${transport_macro} ${job_transport_macro}
-  mv -v ${config} ${job_config}
+  transport_config=transport_${config}
+  cp -v ${transport_out_dir}/${config} ${transport_src_dir}/${transport_config}
   task_dir=${transport_out_dir}/${taskId}
   job_log_dir=${transport_out_dir}/log_${jobId}
   log=${job_log_dir}/${taskId}.tra.log
-  mkdir -p ${job_log_dir}
-  mkdir -p ${task_dir}
-  #cd ${task_dir}
+  mkdir -pv ${job_log_dir}
+  mkdir -pv ${task_dir}
+  cd ${task_dir}
   ln -sf ${VMCWORKDIR}/macro/run/.rootrc .
-  root -b -l -q "${job_transport_macro}(\"${job_config}\",${nEvents})" &> ${log}
+  echo root -b -l -q "${job_transport_macro}(\"${job_config}\",${nEvents})" &> ${log}
   gzip -f ${log} 
   rm .rootrc
 fi
