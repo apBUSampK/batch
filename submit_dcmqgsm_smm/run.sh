@@ -1,11 +1,11 @@
 #!/bin/bash
 
 #hades
-#pbeam=1.95 #auau
-#pbeam=2.34 #agag
+#pbeam=1.95 #T0=1.23
+#pbeam=2.34 #T0=1.58
 
 #cbm
-pbeam=2.3
+#pbeam=2.3
 #pbeam=3.3
 #pbeam=5.36
 #pbeam=6
@@ -29,23 +29,23 @@ pbeam=2.3
 #pbeam=111.13
 
 #na49/61:
-#pbeam=13
-#pbeam=30
+#pbeam=14
+pbeam=30
 #pbeam=40
 #pbeam=158
 
 #system=pau
-system=auau
-#system=pbpb
+#system=auau
+system=pbpb
 #system=agag
 
-export events_per_file=2
-jobRange=1 #-5000
-export split_factor=1
-postfix=""
-partition=debug
+export events_per_file=5000
+jobRange=4004-4204
+export split_factor=20
+postfix=	
+#partition=debug
 #partition=main
-#partition=long
+partition=long
 
 [ "$system" == "agag" ] && AP=108 && ZP=47 && AT=108 && ZT=47
 [ "$system" == "auau" ] && AP=197 && ZP=79 && AT=197 && ZT=79
@@ -80,10 +80,10 @@ mkdir -p $log_dir
 
 script_path=$(dirname ${0})
 run_gen=${script_path}/run_gen.sh
-rsync -a --exclude=src ${model_source} $source_dir/
-rsync -v ${script_path}/input.inp.template $source_dir/dcmqgsm_smm_stable/input.inp 
-rsync -v $0 $source_dir 
-rsync -v $run_gen $source_dir 
+rsync -ap --exclude=src ${model_source} $source_dir/
+rsync -vp ${script_path}/input.inp.template $source_dir/dcmqgsm_smm_stable/input.inp 
+rsync -vp $0 $source_dir 
+rsync -vp $run_gen $source_dir 
 run_gen=${source_dir}/$(basename ${run_gen})
 
 sed -i -- "s~SRC_PATH_TEMPLATE~$source_dir/dcmqgsm_smm_stable~g" $source_dir/dcmqgsm_smm_stable/input.inp
@@ -96,6 +96,7 @@ sed -i -- "s~NEVENTS_TEMPLATE~$events_per_file~g" $source_dir/dcmqgsm_smm_stable
 
 currentDir=`pwd`
 echo "current dir:" $currentDir
+echo "run_gen:" $run_gen
 
 sbatch -J dcm_$pbeam -p $partition -t $time -a $jobRange -o ${log_dir}/%a_%A.log -D $outdir -- $run_gen
 
