@@ -1,31 +1,37 @@
 {
   "accessory": {
-    "batch": true,
-    "nEvents": 1,
-    "jobRange": "1-2",
-    "logDir": "logDir",
-    "cbmRoot": "/root/desktop/soft/cbmroot/build_docker/config.sh",
-    "jobScript": "run_sim_reco.sh",
+    "batch": false,
+    "nEvents": 100,
     "jobName": "cbmsim",
+    "jobRange": "2",
+    "account": "cbm",
+    "ram": "8G",
+    "partition": "main",
+    "time": "08:00:00",
+    "logDir": "/lustre/cbm/users/ogolosov/batch/log_cbmsim",
+    "cbmRoot": "/lustre/cbm/users/ogolosov/soft/cbmroot/master_fr_18.2.1_fs_fs_jun19p1/bin/CbmRootConfig.sh",
+    "#cbmRoot": "/u/ogolosov/soft/cbmroot/fr_18.2.1_fs_jun19p2/build_trunk/config.sh",
+    "jobScript": "/u/ogolosov/batch/submit_reco/run_sim_reco.sh",
     "transport": {
       "run": false,
       "macro": "${VMCWORKDIR}/macro/run/run_transport_json_config.C"},
     "digitization": {
-      "run": false,
+      "run": true,
       "macro": "${VMCWORKDIR}/macro/run/run_digi_json_config.C"},
     "reconstruction": {
-      "run": false,
+      "run": true,
       "macro": "${VMCWORKDIR}/macro/run/run_reco_json_config.C"},
     "AT": { 
       "run": true,
-      "macro": "${VMCWORKDIR}/macro/analysis/common/analysis_tree_converter/run_analysis_tree_maker_json_config.C"}
+      "#macro": "${VMCWORKDIR}/macro/analysis/common/analysis_tree_converter/run_analysis_tree_maker_json_config.C",
+      "macro": "${VMCWORKDIR}/macro/c2f/run_analysis_tree_maker_json_config.C"}
   },
   "logScreenLevel": "INFO",
   "logVerbosityLevel": "LOW",
   "transport": {
     "input": [
       {"generator": "unigen",
-       "file": "${VMCWORKDIR}/input/urqmd.auau.10gev.mbias.root"},
+       "file": "/lustre/cbm/users/ogolosov/mc/generators/dcmqgsm_smm/auau/pbeam12agev/mbias/root/dcmqgsm_${taskId}.root"},
       {"#generator": "pluto",
        "file": "${VMCWORKDIR}/input/pluto.auau.8gev.omega.mpmm.0001.root",
        "plutoPdg": 0},
@@ -37,8 +43,8 @@
        "beamStartZ": -1.0}
     ],
     "output": { 
-      "path": "${abs_path}/scriptTest/tra/${taskId}/${taskId}",
-      "overwrite": true
+      "path": "/lustre/cbm/users/ogolosov/mc/cbmsim/master_fr_18.2.1_fs_jun19p1/dcmqgsm_smm_pluto_w/auau/12agev/mbias/sis100_electron/${taskId}/${taskId}",
+      "overwrite": false
     },
     "target": {
       "material": "Gold",
@@ -67,7 +73,7 @@
       }
     },
     "randomRP": true,
-    "geantVersion": 3,
+    "geantVersion": 4,
     "geant4vmcSettings": {
       "physicsLists": "QGSP_BERT_EMV+optical",
       "specialProcesses": "stepLimiter",
@@ -88,7 +94,7 @@
       "subsystems": {
         "magnet":   "v20a",
         "pipe":     "v16b_1e",
-        "mvd":      "v20c_tr",
+        "mvd":      "v20a_tr",
         "sts":      "v19a",
         "rich":     "v17a_1e",
         "trd":      "v20b_1e",
@@ -106,15 +112,15 @@
   
   "digitization": {
     "generateRunInfo": false,
-    "eventMode": true,
+    "eventMode": false,
     "#timeSliceLength": -1.0,
     "#storeAllTimeSlices": false,
     "#startTime": 1000,
-    "produceNoise": true,
+    "produceNoise": false,
     "input": [
       {"id": 0,
-       "path": "${abs_path}/scriptTest/tra/${taskId}/${taskId}",
-       "#rate": "1.e7",
+       "path": "/lustre/cbm/users/ogolosov/mc/cbmsim/master_fr_18.2.1_fs_jun19p1/dcmqgsm_smm_pluto_w/auau/12agev/mbias/sis100_electron/${taskId}/${taskId}",
+       "rate": "1.",
        "treeAccessMode": "regular",
        "parameterSource": true},
       {"id": -1,
@@ -127,37 +133,37 @@
        "treeAccessMode": "random"}
     ],
     "output": {
-      "path": "${abs_path}/scriptTest/digi/${taskId}/${taskId}",
-      "overwrite": true
+      "path": "/lustre/cbm/users/ogolosov/mc/cbmsim/master_fr_18.2.1_fs_jun19p1/dcmqgsm_smm_pluto_w/auau/12agev/mbias/sis100_electron/ebe/${taskId}/${taskId}",
+      "overwrite": false
     },
     "geometry": {
-      "deactivate": ["", ""],
+      "#deactivate": ["mvd", ""],
       "#deactivateAllBut": ""
     }
   },
  
   "reconstruction": {
-    "input": "${abs_path}/scriptTest/digi/${taskId}/${taskId}", 
+    "input": "/lustre/cbm/users/ogolosov/mc/cbmsim/master_fr_18.2.1_fs_jun19p1/dcmqgsm_smm_pluto_w/auau/12agev/mbias/sis100_electron/ebe/${taskId}/${taskId}", 
     "nTimeSlices": -1,
     "firstTimeSlice": 0, 
     "output": {
-      "path": "${abs_path}/scriptTest/reco/${taskId}/${taskId}",
-      "overwrite": true
+      "path": "/lustre/cbm/users/ogolosov/mc/cbmsim/master_fr_18.2.1_fs_jun19p1/dcmqgsm_smm_pluto_w/auau/12agev/mbias/sis100_electron/ebe/${taskId}/${taskId}",
+      "overwrite": false
     },
     "sEvBuildRaw": "Ideal", 
-    "paramFile": "${abs_path}/scriptTest/tra/${taskId}/${taskId}", 
+    "paramFile": "/lustre/cbm/users/ogolosov/mc/cbmsim/master_fr_18.2.1_fs_jun19p1/dcmqgsm_smm_pluto_w/auau/12agev/mbias/sis100_electron/${taskId}/${taskId}", 
     "useMC": false 
   },
 
   "AT": {
-    "traPath": "${abs_path}/scriptTest/tra/${taskId}/${taskId}", 
-    "rawPath": "${abs_path}/scriptTest/digi/${taskId}/${taskId}", 
-    "recPath": "${abs_path}/scriptTest/reco/${taskId}/${taskId}", 
-    "geoPath": "", 
-    "parPath": "", 
-    "unigenFile": "${VMCWORKDIR}/input/urqmd.auau.10gev.mbias.root",
+    "traPath": "/lustre/cbm/users/ogolosov/mc/cbmsim/master_fr_18.2.1_fs_jun19p1/dcmqgsm_smm_pluto_w/auau/12agev/mbias/sis100_electron/${taskId}/${taskId}", 
+    "rawPath": "/lustre/cbm/users/ogolosov/mc/cbmsim/master_fr_18.2.1_fs_jun19p1/dcmqgsm_smm_pluto_w/auau/12agev/mbias/sis100_electron/ebe/${taskId}/${taskId}", 
+    "recPath": "/lustre/cbm/users/ogolosov/mc/cbmsim/master_fr_18.2.1_fs_jun19p1/dcmqgsm_smm_pluto_w/auau/12agev/mbias/sis100_electron/ebe/${taskId}/${taskId}", 
+    "geoPath": "/lustre/cbm/users/ogolosov/mc/cbmsim/master_fr_18.2.1_fs_jun19p1/dcmqgsm_smm_pluto_w/auau/12agev/mbias/sis100_electron/${taskId}/${taskId}", 
+    "parPath": "/lustre/cbm/users/ogolosov/mc/cbmsim/master_fr_18.2.1_fs_jun19p1/dcmqgsm_smm_pluto_w/auau/12agev/mbias/sis100_electron/${taskId}/${taskId}", 
+    "unigenFile": "/lustre/cbm/users/ogolosov/mc/generators/dcmqgsm_smm/auau/pbeam12agev/mbias/root/dcmqgsm_${taskId}.root",
     "output": {
-      "path": "${abs_path}/scriptTest/AT/${taskId}/${taskId}",
-      "overwrite": false}
+      "path": "/lustre/cbm/users/ogolosov/mc/cbmsim/master_fr_18.2.1_fs_jun19p1/dcmqgsm_smm_pluto_w/auau/12agev/mbias/sis100_electron/ebe/${taskId}/${taskId}",
+      "overwrite": true}
   }
 }

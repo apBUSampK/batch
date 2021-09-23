@@ -4,7 +4,7 @@ steps="transport digitization reconstruction AT"
 for step in ${steps}; do
   read_step_info
   if [ ${run} == true ]; then
-    taskId=${SLURM_ARRAY_TASK_ID}
+    export taskId=${SLURM_ARRAY_TASK_ID}
     config=${src_dir}/${config_name}
     macro=${src_dir}/${macro_name}
     out_path=$(getJsonVal "['${step}']['output']['path']")
@@ -31,13 +31,15 @@ for step in ${steps}; do
       parPath=$(getJsonVal "['AT']['parPath']")
       unigenFile=$(getJsonVal "['AT']['unigenFile']")
       overwrite=$(getJsonVal "['AT']['output']['overwrite']")
+      eventMode=$(getJsonVal "['digitization']['eventMode']")
       root -b -l -q "${macro}(\"${traPath}\",\"${rawPath}\",\"${recPath}\",\"${geoPath}\",\"${parPath}\",\
-	\"${unigenFile}\",\"${out_path}\",${overwrite},\"${config}\",${nEvents})" &> ${log}
+	\"${unigenFile}\",\"${out_path}\",${overwrite},${eventMode},\"${config}\",${nEvents})" &> ${log}
     else 
       root -b -l -q "${macro}(\"${config}\",${nEvents})" &> ${log}
     fi
     gzip -f ${log}
     rm .rootrc
     cd -
+    export taskId=
   fi
 done

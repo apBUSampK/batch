@@ -44,16 +44,20 @@ export -f read_step_info
 
 export config_name=$(basename ${config})
 export config=${src_dir}/${config_name}
-export jobScript=$(basename ${jobScript})
 export nEvents=$(getJsonVal "['accessory']['nEvents']")
+jobRange=$(getJsonVal "['accessory']['jobRange']")
 
 if [ ${batch} == true ];then
+  account=$(getJsonVal "['accessory']['account']")
+  ram=$(getJsonVal "['accessory']['ram']")
+  partition=$(getJsonVal "['accessory']['partition']")
+  time=$(getJsonVal "['accessory']['time']")
   jobName=$(getJsonVal "['accessory']['jobName']")
-  jobRange=$(getJsonVal "['accessory']['jobRange']")
   logDir=$(getJsonVal "['accessory']['logDir']")
   mkdir -pv ${logDir}
-  sbatch -J ${jobName} -o ${logDir}/%A_%a.log -a ${jobRange} --export=ALL -- ${jobSript}
+  sbatch -A ${account} --mem=${ram} -p ${partition} -t ${time} -J ${jobName}\
+    -a ${jobRange} -o ${logDir}/%a_%A.log --export=ALL -- ${jobScript}
 else
-  export SLURM_ARRAY_TASK_ID=taskId
-  ./${jobScript}
+  export SLURM_ARRAY_TASK_ID=${jobRange}
+  ${jobScript}
 fi
