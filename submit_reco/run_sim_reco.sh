@@ -1,6 +1,7 @@
 #!/bin/bash
 
 steps="transport digitization reconstruction AT"
+source ${cbmRoot}
 for step in ${steps}; do
   read_step_info
   if [ ${run} == true ]; then
@@ -31,9 +32,8 @@ for step in ${steps}; do
       parPath=$(getJsonVal "['AT']['parPath']")
       unigenFile=$(getJsonVal "['AT']['unigenFile']")
       overwrite=$(getJsonVal "['AT']['output']['overwrite']")
-      eventMode=$(getJsonVal "['digitization']['eventMode']")
       root -b -l -q "${macro}(\"${traPath}\",\"${rawPath}\",\"${recPath}\",\"${geoPath}\",\"${parPath}\",\
-	\"${unigenFile}\",\"${out_path}\",${overwrite},${eventMode},\"${config}\",${nEvents})" &> ${log}
+	\"${unigenFile}\",\"${out_path}\",${overwrite},\"${config}\",${nEvents})" &> ${log}
     else 
       root -b -l -q "${macro}(\"${config}\",${nEvents})" &> ${log}
     fi

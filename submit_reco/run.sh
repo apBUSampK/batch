@@ -24,7 +24,7 @@ submit_script=${0}
 config=${1}
 batch=$(getJsonVal "['accessory']['batch']")
 jobScript=$(getJsonVal "['accessory']['jobScript']")
-cbmRoot=$(getJsonVal "['accessory']['cbmRoot']")
+export cbmRoot=$(getJsonVal "['accessory']['cbmRoot']")
 source ${cbmRoot}
 
 steps="transport digitization reconstruction AT"
@@ -59,5 +59,5 @@ if [ ${batch} == true ];then
     -a ${jobRange} -o ${logDir}/%a_%A.log --export=ALL -- ${jobScript}
 else
   export SLURM_ARRAY_TASK_ID=${jobRange}
-  ${jobScript}
+  ${jobScript} &> ${logDir}/${jobRange}.log &
 fi

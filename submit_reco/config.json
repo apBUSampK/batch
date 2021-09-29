@@ -3,13 +3,13 @@
     "batch": false,
     "nEvents": 100,
     "jobName": "cbmsim",
-    "jobRange": "2",
+    "jobRange": "1",
     "account": "cbm",
     "ram": "8G",
     "partition": "main",
     "time": "08:00:00",
     "logDir": "/lustre/cbm/users/ogolosov/batch/log_cbmsim",
-    "cbmRoot": "/lustre/cbm/users/ogolosov/soft/cbmroot/master_fr_18.2.1_fs_fs_jun19p1/bin/CbmRootConfig.sh",
+    "cbmRoot": "/lustre/cbm/users/ogolosov/soft/cbmroot/apr21_fr_18.2.1_fs_jun19p1/bin/CbmRootConfig.sh",
     "#cbmRoot": "/u/ogolosov/soft/cbmroot/fr_18.2.1_fs_jun19p2/build_trunk/config.sh",
     "jobScript": "/u/ogolosov/batch/submit_reco/run_sim_reco.sh",
     "transport": {
@@ -43,7 +43,7 @@
        "beamStartZ": -1.0}
     ],
     "output": { 
-      "path": "/lustre/cbm/users/ogolosov/mc/cbmsim/master_fr_18.2.1_fs_jun19p1/dcmqgsm_smm_pluto_w/auau/12agev/mbias/sis100_electron/${taskId}/${taskId}",
+      "path": "/lustre/cbm/users/ogolosov/mc/cbmsim/master_fr_18.2.1_fs_jun19p1/dcmqgsm_smm/auau/12agev/mbias/sis100_electron/${taskId}/${taskId}",
       "overwrite": false
     },
     "target": {
@@ -112,14 +112,14 @@
   
   "digitization": {
     "generateRunInfo": false,
-    "eventMode": false,
+    "eventMode": true,
     "#timeSliceLength": -1.0,
     "#storeAllTimeSlices": false,
     "#startTime": 1000,
     "produceNoise": false,
     "input": [
       {"id": 0,
-       "path": "/lustre/cbm/users/ogolosov/mc/cbmsim/master_fr_18.2.1_fs_jun19p1/dcmqgsm_smm_pluto_w/auau/12agev/mbias/sis100_electron/${taskId}/${taskId}",
+       "path": "/lustre/cbm/users/ogolosov/mc/cbmsim/master_fr_18.2.1_fs_jun19p1/dcmqgsm_smm/auau/12agev/mbias/sis100_electron/${taskId}/${taskId}",
        "rate": "1.",
        "treeAccessMode": "regular",
        "parameterSource": true},
@@ -133,37 +133,37 @@
        "treeAccessMode": "random"}
     ],
     "output": {
-      "path": "/lustre/cbm/users/ogolosov/mc/cbmsim/master_fr_18.2.1_fs_jun19p1/dcmqgsm_smm_pluto_w/auau/12agev/mbias/sis100_electron/ebe/${taskId}/${taskId}",
+      "path": "/lustre/cbm/users/ogolosov/mc/cbmsim/master_fr_18.2.1_fs_jun19p1/dcmqgsm_smm/auau/12agev/mbias/sis100_electron/ebe/${taskId}/${taskId}",
       "overwrite": false
     },
     "geometry": {
-      "#deactivate": ["mvd", ""],
+      "deactivate": ["mvd", ""],
       "#deactivateAllBut": ""
     }
   },
  
   "reconstruction": {
-    "input": "/lustre/cbm/users/ogolosov/mc/cbmsim/master_fr_18.2.1_fs_jun19p1/dcmqgsm_smm_pluto_w/auau/12agev/mbias/sis100_electron/ebe/${taskId}/${taskId}", 
+    "input": "/lustre/cbm/users/ogolosov/mc/cbmsim/master_fr_18.2.1_fs_jun19p1/dcmqgsm_smm/auau/12agev/mbias/sis100_electron/ebe/${taskId}/${taskId}", 
     "nTimeSlices": -1,
     "firstTimeSlice": 0, 
     "output": {
-      "path": "/lustre/cbm/users/ogolosov/mc/cbmsim/master_fr_18.2.1_fs_jun19p1/dcmqgsm_smm_pluto_w/auau/12agev/mbias/sis100_electron/ebe/${taskId}/${taskId}",
+      "path": "/lustre/cbm/users/ogolosov/mc/cbmsim/master_fr_18.2.1_fs_jun19p1/dcmqgsm_smm/auau/12agev/mbias/sis100_electron/ebe/${taskId}/${taskId}",
       "overwrite": false
     },
     "sEvBuildRaw": "Ideal", 
-    "paramFile": "/lustre/cbm/users/ogolosov/mc/cbmsim/master_fr_18.2.1_fs_jun19p1/dcmqgsm_smm_pluto_w/auau/12agev/mbias/sis100_electron/${taskId}/${taskId}", 
+    "paramFile": "/lustre/cbm/users/ogolosov/mc/cbmsim/master_fr_18.2.1_fs_jun19p1/dcmqgsm_smm/auau/12agev/mbias/sis100_electron/${taskId}/${taskId}", 
     "useMC": false 
   },
 
   "AT": {
-    "traPath": "/lustre/cbm/users/ogolosov/mc/cbmsim/master_fr_18.2.1_fs_jun19p1/dcmqgsm_smm_pluto_w/auau/12agev/mbias/sis100_electron/${taskId}/${taskId}", 
-    "rawPath": "/lustre/cbm/users/ogolosov/mc/cbmsim/master_fr_18.2.1_fs_jun19p1/dcmqgsm_smm_pluto_w/auau/12agev/mbias/sis100_electron/ebe/${taskId}/${taskId}", 
-    "recPath": "/lustre/cbm/users/ogolosov/mc/cbmsim/master_fr_18.2.1_fs_jun19p1/dcmqgsm_smm_pluto_w/auau/12agev/mbias/sis100_electron/ebe/${taskId}/${taskId}", 
-    "geoPath": "/lustre/cbm/users/ogolosov/mc/cbmsim/master_fr_18.2.1_fs_jun19p1/dcmqgsm_smm_pluto_w/auau/12agev/mbias/sis100_electron/${taskId}/${taskId}", 
-    "parPath": "/lustre/cbm/users/ogolosov/mc/cbmsim/master_fr_18.2.1_fs_jun19p1/dcmqgsm_smm_pluto_w/auau/12agev/mbias/sis100_electron/${taskId}/${taskId}", 
+    "traPath": "/lustre/cbm/users/ogolosov/mc/cbmsim/master_fr_18.2.1_fs_jun19p1/dcmqgsm_smm/auau/12agev/mbias/sis100_electron/${taskId}/${taskId}", 
+    "rawPath": "/lustre/cbm/users/ogolosov/mc/cbmsim/master_fr_18.2.1_fs_jun19p1/dcmqgsm_smm/auau/12agev/mbias/sis100_electron/ebe/${taskId}/${taskId}", 
+    "recPath": "/lustre/cbm/users/ogolosov/mc/cbmsim/master_fr_18.2.1_fs_jun19p1/dcmqgsm_smm/auau/12agev/mbias/sis100_electron/ebe/${taskId}/${taskId}", 
+    "geoPath": "/lustre/cbm/users/ogolosov/mc/cbmsim/master_fr_18.2.1_fs_jun19p1/dcmqgsm_smm/auau/12agev/mbias/sis100_electron/${taskId}/${taskId}", 
+    "parPath": "/lustre/cbm/users/ogolosov/mc/cbmsim/master_fr_18.2.1_fs_jun19p1/dcmqgsm_smm/auau/12agev/mbias/sis100_electron/${taskId}/${taskId}", 
     "unigenFile": "/lustre/cbm/users/ogolosov/mc/generators/dcmqgsm_smm/auau/pbeam12agev/mbias/root/dcmqgsm_${taskId}.root",
     "output": {
-      "path": "/lustre/cbm/users/ogolosov/mc/cbmsim/master_fr_18.2.1_fs_jun19p1/dcmqgsm_smm_pluto_w/auau/12agev/mbias/sis100_electron/ebe/${taskId}/${taskId}",
+      "path": "/lustre/cbm/users/ogolosov/mc/cbmsim/master_fr_18.2.1_fs_jun19p1/dcmqgsm_smm/auau/12agev/mbias/sis100_electron/ebe/${taskId}/${taskId}",
       "overwrite": true}
   }
 }
