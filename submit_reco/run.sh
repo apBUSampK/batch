@@ -46,6 +46,8 @@ export config_name=$(basename ${config})
 export config=${src_dir}/${config_name}
 export nEvents=$(getJsonVal "['accessory']['nEvents']")
 jobRange=$(getJsonVal "['accessory']['jobRange']")
+logDir=$(getJsonVal "['accessory']['logDir']")
+mkdir -pv ${logDir}
 
 if [ ${batch} == true ];then
   account=$(getJsonVal "['accessory']['account']")
@@ -53,8 +55,6 @@ if [ ${batch} == true ];then
   partition=$(getJsonVal "['accessory']['partition']")
   time=$(getJsonVal "['accessory']['time']")
   jobName=$(getJsonVal "['accessory']['jobName']")
-  logDir=$(getJsonVal "['accessory']['logDir']")
-  mkdir -pv ${logDir}
   sbatch -A ${account} --mem=${ram} -p ${partition} -t ${time} -J ${jobName}\
     -a ${jobRange} -o ${logDir}/%a_%A.log --export=ALL -- ${jobScript}
 else

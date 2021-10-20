@@ -1,19 +1,18 @@
 {
   "accessory": {
     "batch": false,
-    "nEvents": 100,
+    "nEvents": 1,
     "jobName": "cbmsim",
     "jobRange": "1",
     "account": "cbm",
     "ram": "8G",
     "partition": "main",
     "time": "08:00:00",
-    "logDir": "/lustre/cbm/users/ogolosov/batch/log_cbmsim",
-    "cbmRoot": "/lustre/cbm/users/ogolosov/soft/cbmroot/apr21_fr_18.2.1_fs_jun19p1/bin/CbmRootConfig.sh",
-    "#cbmRoot": "/u/ogolosov/soft/cbmroot/fr_18.2.1_fs_jun19p2/build_trunk/config.sh",
+    "logDir": "/u/${USER}/log_cbmsim",
+    "cbmRoot": "/lustre/cbm/users/ogolosov/soft/cbmroot/master_fr_18.2.1_fs_jun19p2/bin/CbmRootConfig.sh",
     "jobScript": "/u/ogolosov/batch/submit_reco/run_sim_reco.sh",
     "transport": {
-      "run": false,
+      "run": true,
       "macro": "${VMCWORKDIR}/macro/run/run_transport_json_config.C"},
     "digitization": {
       "run": true,
@@ -23,7 +22,6 @@
       "macro": "${VMCWORKDIR}/macro/run/run_reco_json_config.C"},
     "AT": { 
       "run": true,
-      "#macro": "${VMCWORKDIR}/macro/analysis/common/analysis_tree_converter/run_analysis_tree_maker_json_config.C",
       "macro": "${VMCWORKDIR}/macro/c2f/run_analysis_tree_maker_json_config.C"}
   },
   "logScreenLevel": "INFO",
@@ -43,7 +41,7 @@
        "beamStartZ": -1.0}
     ],
     "output": { 
-      "path": "/lustre/cbm/users/ogolosov/mc/cbmsim/master_fr_18.2.1_fs_jun19p1/dcmqgsm_smm/auau/12agev/mbias/sis100_electron/${taskId}/${taskId}",
+      "path": "/u/${USER}/test/${taskId}/${taskId}",
       "overwrite": false
     },
     "target": {
@@ -119,7 +117,7 @@
     "produceNoise": false,
     "input": [
       {"id": 0,
-       "path": "/lustre/cbm/users/ogolosov/mc/cbmsim/master_fr_18.2.1_fs_jun19p1/dcmqgsm_smm/auau/12agev/mbias/sis100_electron/${taskId}/${taskId}",
+       "path": "/u/${USER}/test/${taskId}/${taskId}",
        "rate": "1.",
        "treeAccessMode": "regular",
        "parameterSource": true},
@@ -133,7 +131,7 @@
        "treeAccessMode": "random"}
     ],
     "output": {
-      "path": "/lustre/cbm/users/ogolosov/mc/cbmsim/master_fr_18.2.1_fs_jun19p1/dcmqgsm_smm/auau/12agev/mbias/sis100_electron/ebe/${taskId}/${taskId}",
+      "path": "/u/${USER}/test/${taskId}/${taskId}",
       "overwrite": false
     },
     "geometry": {
@@ -143,27 +141,27 @@
   },
  
   "reconstruction": {
-    "input": "/lustre/cbm/users/ogolosov/mc/cbmsim/master_fr_18.2.1_fs_jun19p1/dcmqgsm_smm/auau/12agev/mbias/sis100_electron/ebe/${taskId}/${taskId}", 
+    "input": "/u/${USER}/test/${taskId}/${taskId}", 
     "nTimeSlices": -1,
     "firstTimeSlice": 0, 
     "output": {
-      "path": "/lustre/cbm/users/ogolosov/mc/cbmsim/master_fr_18.2.1_fs_jun19p1/dcmqgsm_smm/auau/12agev/mbias/sis100_electron/ebe/${taskId}/${taskId}",
+      "path": "/u/${USER}/test/${taskId}/${taskId}",
       "overwrite": false
     },
     "sEvBuildRaw": "Ideal", 
-    "paramFile": "/lustre/cbm/users/ogolosov/mc/cbmsim/master_fr_18.2.1_fs_jun19p1/dcmqgsm_smm/auau/12agev/mbias/sis100_electron/${taskId}/${taskId}", 
+    "paramFile": "/u/${USER}/test/${taskId}/${taskId}", 
     "useMC": false 
   },
 
   "AT": {
-    "traPath": "/lustre/cbm/users/ogolosov/mc/cbmsim/master_fr_18.2.1_fs_jun19p1/dcmqgsm_smm/auau/12agev/mbias/sis100_electron/${taskId}/${taskId}", 
-    "rawPath": "/lustre/cbm/users/ogolosov/mc/cbmsim/master_fr_18.2.1_fs_jun19p1/dcmqgsm_smm/auau/12agev/mbias/sis100_electron/ebe/${taskId}/${taskId}", 
-    "recPath": "/lustre/cbm/users/ogolosov/mc/cbmsim/master_fr_18.2.1_fs_jun19p1/dcmqgsm_smm/auau/12agev/mbias/sis100_electron/ebe/${taskId}/${taskId}", 
-    "geoPath": "/lustre/cbm/users/ogolosov/mc/cbmsim/master_fr_18.2.1_fs_jun19p1/dcmqgsm_smm/auau/12agev/mbias/sis100_electron/${taskId}/${taskId}", 
-    "parPath": "/lustre/cbm/users/ogolosov/mc/cbmsim/master_fr_18.2.1_fs_jun19p1/dcmqgsm_smm/auau/12agev/mbias/sis100_electron/${taskId}/${taskId}", 
+    "traPath": "/u/${USER}/test/${taskId}/${taskId}", 
+    "rawPath": "/u/${USER}/test/${taskId}/${taskId}", 
+    "recPath": "/u/${USER}/test/${taskId}/${taskId}", 
+    "geoPath": "/u/${USER}/test/${taskId}/${taskId}", 
+    "parPath": "/u/${USER}/test/${taskId}/${taskId}", 
     "unigenFile": "/lustre/cbm/users/ogolosov/mc/generators/dcmqgsm_smm/auau/pbeam12agev/mbias/root/dcmqgsm_${taskId}.root",
     "output": {
-      "path": "/lustre/cbm/users/ogolosov/mc/cbmsim/master_fr_18.2.1_fs_jun19p1/dcmqgsm_smm/auau/12agev/mbias/sis100_electron/ebe/${taskId}/${taskId}",
+      "path": "/u/${USER}/test/${taskId}/${taskId}",
       "overwrite": true}
   }
 }
