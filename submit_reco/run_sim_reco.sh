@@ -38,7 +38,7 @@ for step in ${steps}; do
       root -b -l -q "${macro}(\"${config}\",${nEvents})" &> ${log}
     fi
     gzip -f ${log}
-    rm .rootrc
+    rm .rootrc *{moni,Fair,TR,L1,Edep}* 
     cd -
     export taskId=
   fi
