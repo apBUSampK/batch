@@ -3,38 +3,43 @@
 steps="transport digitization reconstruction AT"
 source ${cbmRoot}
 for step in ${steps}; do
-  read_step_info
+  readStepInfo
   if [ ${run} == true ]; then
     export taskId=${SLURM_ARRAY_TASK_ID}
-    config=${src_dir}/${config_name}
-    macro=${src_dir}/${macro_name}
-    out_path=$(getJsonVal "['${step}']['output']['path']")
-    log=${out_path}.${step}.log
-    out_dir=$(dirname ${out_path})
-    mkdir -pv ${out_dir}
-    cd ${out_dir}
-    ln -sf ${VMCWORKDIR}/macro/run/.rootrc .
+    config=${srcDir}/${configName}
+    macro=${srcDir}/${macroName}
+    outFile=$(getJsonVal "['${step}']['output']['path']")
+    log=${outFile}.${step}.log
+    outDir=$(dirname ${outFile})
+    
+    mkdir -pv ${outDir}
+    cd ${outDir}
+    ln -sfv ${VMCWORKDIR}/macro/run/.rootrc ${outDir} 
     if [ ${step} == reconstruction ]; then
-      input=$(getJsonVal "['reconstruction']['input']")
+      rawFile=$(getJsonVal "['reconstruction']['rawFile']")
       nTimeSlices=$(getJsonVal "['reconstruction']['nTimeSlices']")
       firstTimeSlice=$(getJsonVal "['reconstruction']['firstTimeSlice']")
-      overwrite=$(getJsonVal "['reconstruction']['output']['overwrite']")
+#      overwrite=$(getJsonVal "['reconstruction']['output']['overwrite']")
       sEvBuildRaw=$(getJsonVal "['reconstruction']['sEvBuildRaw']")
-      paramFile=$(getJsonVal "['reconstruction']['paramFile']")
+      traFile=$(getJsonVal "['reconstruction']['traFile']")
       useMC=$(getJsonVal "['reconstruction']['useMC']")
-      root -b -l -q "${macro}(\"${input}\",${nTimeSlices},${firstTimeSlice},\"${out_path}\",\
-        ${overwrite},\"${sEvBuildRaw}\",\"${config}\",\"${paramFile}\",${useMC})" &> ${log}
+      root -b -l -q "${macro}(\"${rawFile}\",${nTimeSlices},${firstTimeSlice},\"${outFile}\",\
+        ${overwrite},\"${sEvBuildRaw}\",\"${config}\",\"${traFile}\",${useMC})" &> ${log}
     elif [ ${step} == AT ]; then
-      traPath=$(getJsonVal "['AT']['traPath']")
-      rawPath=$(getJsonVal "['AT']['rawPath']")
-      recPath=$(getJsonVal "['AT']['recPath']")
-      geoPath=$(getJsonVal "['AT']['geoPath']")
-      parPath=$(getJsonVal "['AT']['parPath']")
+      traFile=$(getJsonVal "['AT']['traFile']")
+      rawFile=$(getJsonVal "['AT']['rawFile']")
+      recFile=$(getJsonVal "['AT']['recFile']")
       unigenFile=$(getJsonVal "['AT']['unigenFile']")
-      overwrite=$(getJsonVal "['AT']['output']['overwrite']")
-      root -b -l -q "${macro}(\"${traPath}\",\"${rawPath}\",\"${recPath}\",\"${geoPath}\",\"${parPath}\",\
-	\"${unigenFile}\",\"${out_path}\",${overwrite},\"${config}\",${nEvents})" &> ${log}
+#      overwrite=$(getJsonVal "['AT']['output']['overwrite']")
+      root -b -l -q "${macro}(\"${traFile}\",\"${rawFile}\",\"${recFile}\",\
+	\"${unigenFile}\",\"${outFile}\",${overwrite},\"${config}\",${nEvents})" &> ${log}
     else 
+      if [ ${step} == digitization ]; then
+        input=$(getJsonVal "['transport']['output']['path']")
+        if [ ! -e ${outFile}.par.root ] || [ ${overwrite} == true ]; then
+          cp -v ${input}.par.root ${outDir}
+        fi
+      fi 
       root -b -l -q "${macro}(\"${config}\",${nEvents})" &> ${log}
     fi
     gzip -f ${log}

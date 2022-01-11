@@ -1,6 +1,6 @@
 {
   "accessory": {
-    "batch": true,
+    "batch": false,
     "nEvents": 1,
     "jobName": "cbmsim",
     "jobRange": "1",
@@ -41,7 +41,7 @@
        "beamStartZ": -1.0}
     ],
     "output": { 
-      "path": "/u/${USER}/test/${taskId}/${taskId}",
+      "path": "/u/${USER}/test/tra/${taskId}/${taskId}",
       "overwrite": false
     },
     "target": {
@@ -117,10 +117,9 @@
     "produceNoise": false,
     "input": [
       {"id": 0,
-       "path": "/u/${USER}/test/${taskId}/${taskId}",
+       "path": "/u/${USER}/test/tra/${taskId}/${taskId}",
        "rate": "1.",
-       "treeAccessMode": "regular",
-       "parameterSource": true},
+       "treeAccessMode": "regular"},
       {"id": -1,
        "path": "test_emb",
        "embedToId": 0,
@@ -131,7 +130,7 @@
        "treeAccessMode": "random"}
     ],
     "output": {
-      "path": "/u/${USER}/test/${taskId}/${taskId}",
+      "path": "/u/${USER}/test/raw/${taskId}/${taskId}",
       "overwrite": false
     },
     "geometry": {
@@ -141,27 +140,25 @@
   },
  
   "reconstruction": {
-    "input": "/u/${USER}/test/${taskId}/${taskId}", 
+    "rawFile": "/u/${USER}/test/raw/${taskId}/${taskId}", 
     "nTimeSlices": -1,
     "firstTimeSlice": 0, 
     "output": {
-      "path": "/u/${USER}/test/${taskId}/${taskId}",
+      "path": "/u/${USER}/test/reco/${taskId}/${taskId}",
       "overwrite": false
     },
     "sEvBuildRaw": "Ideal", 
-    "paramFile": "/u/${USER}/test/${taskId}/${taskId}", 
+    "traFile": "/u/${USER}/test/tra/${taskId}/${taskId}",
     "useMC": false 
   },
 
   "AT": {
-    "traPath": "/u/${USER}/test/${taskId}/${taskId}", 
-    "rawPath": "/u/${USER}/test/${taskId}/${taskId}", 
-    "recPath": "/u/${USER}/test/${taskId}/${taskId}", 
-    "geoPath": "/u/${USER}/test/${taskId}/${taskId}", 
-    "parPath": "/u/${USER}/test/${taskId}/${taskId}", 
+    "traFile": "/u/${USER}/test/tra/${taskId}/${taskId}", 
+    "rawFile": "/u/${USER}/test/raw/${taskId}/${taskId}", 
+    "recFile": "/u/${USER}/test/reco/${taskId}/${taskId}", 
     "unigenFile": "/lustre/cbm/users/ogolosov/mc/generators/dcmqgsm_smm/auau/pbeam12agev/mbias/root/dcmqgsm_${taskId}.root",
     "output": {
-      "path": "/u/${USER}/test/${taskId}/${taskId}",
-      "overwrite": true}
+      "path": "/u/${USER}/test/AT/${taskId}/${taskId}",
+      "overwrite": false}
   }
 }

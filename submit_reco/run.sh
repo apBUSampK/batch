@@ -3,24 +3,25 @@
 function getJsonVal () {
   val=$(python -c "import json;print(json.dumps(json.load(open('${config}'))$1))";)
   eval echo ${val}
-} # e.x. 'out_path=$(getJsonVal "['transport']['output']['path']")'
+} # e.x. 'outPath=$(getJsonVal "['transport']['output']['path']")'
 
 #function checkJsonKey () {
 #  python -c "import json,sys;print ('$1' in json.load(open('${config}')))";
 #} # returns True if key exists, False if not, e.x. 'run_transport=$(checkJsonKey "transport")'
 
-function read_step_info () {
+function readStepInfo () {
   run=$(getJsonVal "['accessory']['${step}']['run']")
   if [ ${run} == true ]; then
-    out_dir=$(getJsonVal "['${step}']['output']['path']")
-    [[ ${out_dir} != */ ]] && out_dir=$(dirname ${out_dir})
-    src_dir=${out_dir}/macro
+    overwrite=$(getJsonVal "['${step}']['output']['overwrite']")
+    outDir=$(getJsonVal "['${step}']['output']['path']")
+    [[ ${outDir} != */ ]] && outDir=$(dirname ${outFile})
+    srcDir=${outDir}/macro
     macro=$(getJsonVal "['accessory']['${step}']['macro']")
-    macro_name=$(basename ${macro})
+    macroName=$(basename ${macro})
   fi
 }
 
-submit_script=${0}
+submitScript=${0}
 config=${1}
 batch=$(getJsonVal "['accessory']['batch']")
 jobScript=$(getJsonVal "['accessory']['jobScript']")
@@ -29,21 +30,21 @@ source ${cbmRoot}
 
 steps="transport digitization reconstruction AT"
 for step in ${steps}; do
-  read_step_info
+  readStepInfo
   if [ ${run} == true ]; then
-    mkdir -pv ${src_dir}
-    cp -v ${macro} ${src_dir}
-    cp -v ${config} ${src_dir}
-    cp -v ${submit_script} ${src_dir}
-    cp -v ${jobScript} ${src_dir}
+    mkdir -pv ${srcDir}
+    cp -v ${macro} ${srcDir}
+    cp -v ${config} ${srcDir}
+    cp -v ${submitScript} ${srcDir}
+    cp -v ${jobScript} ${srcDir}
   fi
 done
 
 export -f getJsonVal
-export -f read_step_info
+export -f readStepInfo
 
-export config_name=$(basename ${config})
-export config=${src_dir}/${config_name}
+export configName=$(basename ${config})
+export config=${srcDir}/${configName}
 export nEvents=$(getJsonVal "['accessory']['nEvents']")
 jobRange=$(getJsonVal "['accessory']['jobRange']")
 logDir=$(getJsonVal "['accessory']['logDir']")
