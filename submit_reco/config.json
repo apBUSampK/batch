@@ -1,16 +1,16 @@
 {
   "accessory": {
-    "batch": false,
+    "batch": true,
     "nEvents": 1,
     "jobName": "cbmsim",
     "jobRange": "1",
     "account": "cbm",
     "ram": "8G",
-    "partition": "main",
-    "time": "08:00:00",
-    "logDir": "/u/${USER}/log_cbmsim",
+    "partition": "debug",
+    "time": "00:20:00",
+    "logDir": "/u/${USER}/test/log",
     "cbmRoot": "/lustre/cbm/users/ogolosov/soft/cbmroot/master_fr_18.2.1_fs_jun19p2/bin/CbmRootConfig.sh",
-    "jobScript": "/u/ogolosov/batch/submit_reco/run_sim_reco.sh",
+    "jobScript": "${PWD}/run_sim_reco.sh",
     "transport": {
       "run": true,
       "macro": "${VMCWORKDIR}/macro/run/run_transport_json_config.C"},
