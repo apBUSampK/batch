@@ -6,6 +6,8 @@ for step in ${steps}; do
   readStepInfo
   if [ ${run} == true ]; then
     export taskId=${SLURM_ARRAY_TASK_ID}
+    plutoShift=$(getJsonVal "['accessory']['transport']['plutoShift']")
+    export plutoFileId=$(printf %05d $((${taskId}-${plutoShift})))
     config=${srcDir}/${configName}
     macro=${srcDir}/${macroName}
     outFile=$(getJsonVal "['${step}']['output']['path']")
@@ -19,7 +21,6 @@ for step in ${steps}; do
       rawFile=$(getJsonVal "['reconstruction']['rawFile']")
       nTimeSlices=$(getJsonVal "['reconstruction']['nTimeSlices']")
       firstTimeSlice=$(getJsonVal "['reconstruction']['firstTimeSlice']")
-#      overwrite=$(getJsonVal "['reconstruction']['output']['overwrite']")
       sEvBuildRaw=$(getJsonVal "['reconstruction']['sEvBuildRaw']")
       traFile=$(getJsonVal "['reconstruction']['traFile']")
       useMC=$(getJsonVal "['reconstruction']['useMC']")
@@ -30,7 +31,6 @@ for step in ${steps}; do
       rawFile=$(getJsonVal "['AT']['rawFile']")
       recFile=$(getJsonVal "['AT']['recFile']")
       unigenFile=$(getJsonVal "['AT']['unigenFile']")
-#      overwrite=$(getJsonVal "['AT']['output']['overwrite']")
       root -b -l -q "${macro}(\"${traFile}\",\"${rawFile}\",\"${recFile}\",\
 	\"${unigenFile}\",\"${outFile}\",${overwrite},\"${config}\",${nEvents})" &> ${log}
     else 
