@@ -56,8 +56,10 @@ if [ ${batch} == true ];then
   partition=$(getJsonVal "['accessory']['partition']")
   time=$(getJsonVal "['accessory']['time']")
   jobName=$(getJsonVal "['accessory']['jobName']")
+  excludeNodes=$(getJsonVal "['accessory']['excludeNodes']")
   sbatch -A ${account} --mem=${ram} -p ${partition} -t ${time} -J ${jobName}\
-    -a ${jobRange} -o ${logDir}/%a_%A.log --export=ALL -- ${jobScript}
+    -a ${jobRange} -o ${logDir}/%a_%A.log --export=ALL \
+    --exclude=${excludeNodes} -- ${jobScript}
 else
   export SLURM_ARRAY_TASK_ID=${jobRange}
   ${jobScript} &> ${logDir}/${jobRange}.log &

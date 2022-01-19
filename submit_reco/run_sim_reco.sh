@@ -32,7 +32,7 @@ for step in ${steps}; do
       recFile=$(getJsonVal "['AT']['recFile']")
       unigenFile=$(getJsonVal "['AT']['unigenFile']")
       root -b -l -q "${macro}(\"${traFile}\",\"${rawFile}\",\"${recFile}\",\
-	\"${unigenFile}\",\"${outFile}\",${overwrite},\"${config}\",${nEvents})" &> ${log}
+	\"${unigenFile}\",\"${outFile}\",${overwrite},\"${config}\")" &> ${log}
     else 
       if [ ${step} == digitization ]; then
         input=$(getJsonVal "['transport']['output']['path']")
@@ -43,7 +43,7 @@ for step in ${steps}; do
       root -b -l -q "${macro}(\"${config}\",${nEvents})" &> ${log}
     fi
     gzip -f ${log}
-    rm .rootrc *{moni,Fair,TR,L1,Edep}* 
+    rm .rootrc *{core,moni,Fair,TR,L1,Edep}* 
     cd -
     export taskId=
   fi
