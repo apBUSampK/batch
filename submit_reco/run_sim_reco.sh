@@ -11,8 +11,8 @@ for step in ${steps}; do
     config=${srcDir}/${configName}
     macro=${srcDir}/${macroName}
     outFile=$(getJsonVal "['${step}']['output']['path']")
-    log=${outFile}.${step}.log
     outDir=$(dirname ${outFile})
+    log=${outDir}/${step}.log
     
     mkdir -pv ${outDir}
     cd ${outDir}
