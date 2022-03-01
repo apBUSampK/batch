@@ -12,7 +12,7 @@ elapsed=$SECONDS
 datfile=${outdir_dat}/${outfilenamemask}_${filenum}.dat.gz
 datfile_pure=${outdir_dat_pure}/${outfilenamemask}_pure_${filenum}.dat.gz
 rootfile=${outfilenamemask}_$filenum
-start_number=$(( $filenum * $split_factor ))
+start_number=$(( ($filenum - 1) * $split_factor ))
 
 echo datfile: ${datfile} 
 echo datfile_pure: ${datfile_pure} 

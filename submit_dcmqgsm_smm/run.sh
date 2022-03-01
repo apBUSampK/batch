@@ -11,8 +11,11 @@
 #pbeam=6
 #pbeam=8
 #pbeam=10
-#pbeam=12
+pbeam=12
 #pbeam=30
+
+#hz
+#pbeam=11.6
 
 #ags:
 #pbeam=2.78
@@ -29,39 +32,46 @@
 #pbeam=111.13
 
 #na49/61:
-#pbeam=14
-pbeam=30
-#pbeam=40
-#pbeam=158
+#pbeam=13
+#pbeam=30
+#pbeam=41
+#pbeam=159
+
+#lhc
+#pbeam=13433000 # 5.02 TeV
 
 #system=pau
-#system=auau
-system=pbpb
+system=auau
+#system=auag
+#system=aubr
+#system=pbpb
 #system=agag
 
-export events_per_file=5000
-jobRange=4004-4204
-export split_factor=20
+export events_per_file=1000
+jobRange=1-2
+export split_factor=1000
 postfix=	
-#partition=debug
+partition=debug
 #partition=main
-partition=long
+#partition=long
 
 [ "$system" == "agag" ] && AP=108 && ZP=47 && AT=108 && ZT=47
 [ "$system" == "auau" ] && AP=197 && ZP=79 && AT=197 && ZT=79
+[ "$system" == "auag" ] && AP=197 && ZP=79 && AT=108 && ZT=47
+[ "$system" == "aubr" ] && AP=197 && ZP=79 && AT=80 && ZT=37
 [ "$system" == "pbpb" ] && AP=208 && ZP=82 && AT=208 && ZT=82
-[ "$system" == "pau" ] && AP=1 && ZP=1 && AT=197 && ZT=79
+[ "$system" == "pau"  ] && AP=1 && ZP=1 && AT=197 && ZT=79
 
 [ "$partition" == "debug" ] && time=0:20:00
-[ "$partition" == "main" ] && time=8:00:00
-[ "$partition" == "long" ] && time=1-00:00:00
+[ "$partition" == "main"  ] && time=8:00:00
+[ "$partition" == "long"  ] && time=1-00:00:00
 
 export remove_logs= #"yes"
 
 T0=$(echo "$pbeam" | awk '{print sqrt($pbeam*$pbeam+0.938*0.938)-0.938}')
 
 model_source=/lustre/cbm/users/ogolosov/mc/macros/submit_dcmqgsm_smm/dcmqgsm_smm_stable
-export root_config=/cvmfs/fairroot.gsi.de/fairsoft/jun19p1/bin/thisroot.sh
+export root_config=/cvmfs/fairsoft.gsi.de/debian10/fairsoft/jun19p2/bin/thisroot.sh
 export mcini_config=/lustre/cbm/users/ogolosov/soft/mcini/macro/config.sh
 
 outdir="/lustre/cbm/users/${USER}/mc/generators/dcmqgsm_smm/${system}/pbeam${pbeam}agev${postfix}/mbias"

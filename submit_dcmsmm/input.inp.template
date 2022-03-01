@@ -1,0 +1,13 @@
+outfile.inf
+outfile.out
+outfile.r10
+outfile.r12
+new
+AP_TEMPLATE,AT_TEMPLATE,ZP_TEMPLATE,ZT_TEMPLATE,0.0,0.940,TO_TEMPLATE,NEVENTS_TEMPLATE
+0, 1, 1, 1
+11
+**************************************
+AP,AT,ZP,ZT,SP,MP,T0/AP,LIMC
+xbmin,xbmax,ifib0,ksys
+JJJ
+

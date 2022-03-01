@@ -1,0 +1,35 @@
+Version: 1.8 # minimal SMASH version to use with this config file
+
+Logging:
+    default: INFO
+
+General:
+    Modus:          Collider
+    Time_Step_Mode: Fixed
+    Delta_Time:     0.1
+    End_Time:       200.0
+    Randomseed:     -1
+    Nevents:        2000
+
+Output:
+    Output_Interval: 10.0
+    Particles:
+        Format:          ["Root"]
+#    Collisions:
+#        Format:          ["Root"]
+#    Initial_Conditions:
+#        Format:          ["Root"]
+
+Modi:
+    Collider:
+        Projectile:
+            Particles: {2212: 79, 2112: 118} #Gold197
+        Target:
+            Particles: {2212: 79, 2112: 118} #Gold197
+        P_Lab: 12.0
+        Fermi_Motion: "frozen"
+        Impact:
+            Sample: "quadratic"
+            Range: [0.0, 20.0]
+#            Random_Reaction_Plane: true
+
