@@ -11,8 +11,12 @@
 #pbeam=6
 #pbeam=8
 #pbeam=10
-pbeam=12
+#pbeam=12
 #pbeam=30
+
+#bman
+pbeam=4
+#pbeam=4.85
 
 #hz
 #pbeam=11.6
@@ -41,40 +45,49 @@ pbeam=12
 #pbeam=13433000 # 5.02 TeV
 
 #system=pau
-system=auau
+#system=auau
 #system=auag
 #system=aubr
+system=arpb
 #system=pbpb
 #system=agag
+#system=xecs
+#system=xexe
 
 export events_per_file=1000
-jobRange=1-2
-export split_factor=1000
-postfix=	
-partition=debug
-#partition=main
-#partition=long
+jobRange=1-1000
+export jobShift=0
+export split_factor=1
+export allowPosPzTargetSpect=false
+postfix=
+partition=fast
+#partition=cpu
 
 [ "$system" == "agag" ] && AP=108 && ZP=47 && AT=108 && ZT=47
+[ "$system" == "xecs" ] && AP=131 && ZP=54 && AT=133 && ZT=55
+[ "$system" == "xexe" ] && AP=131 && ZP=54 && AT=131 && ZT=54
 [ "$system" == "auau" ] && AP=197 && ZP=79 && AT=197 && ZT=79
 [ "$system" == "auag" ] && AP=197 && ZP=79 && AT=108 && ZT=47
 [ "$system" == "aubr" ] && AP=197 && ZP=79 && AT=80 && ZT=37
 [ "$system" == "pbpb" ] && AP=208 && ZP=82 && AT=208 && ZT=82
+[ "$system" == "arpb" ] && AP=40 && ZP=18 && AT=208 && ZT=82
 [ "$system" == "pau"  ] && AP=1 && ZP=1 && AT=197 && ZT=79
 
-[ "$partition" == "debug" ] && time=0:20:00
-[ "$partition" == "main"  ] && time=8:00:00
-[ "$partition" == "long"  ] && time=1-00:00:00
+export swapProjTarg=false
+[ $AP -gt $AT ] && export swapProjTarg=true 
 
-export remove_logs= #"yes"
+[ "$partition" == "fast" ] && time=1:00:00
+[ "$partition" == "cpu" ] && time=1-00:00:00
+
+export remove_logs="yes"
 
 T0=$(echo "$pbeam" | awk '{print sqrt($pbeam*$pbeam+0.938*0.938)-0.938}')
 
-model_source=/lustre/cbm/users/ogolosov/mc/macros/submit_dcmqgsm_smm/dcmqgsm_smm_stable
-export root_config=/cvmfs/fairsoft.gsi.de/debian10/fairsoft/jun19p2/bin/thisroot.sh
-export mcini_config=/lustre/cbm/users/ogolosov/soft/mcini/macro/config.sh
+model_source=/home/ovgol/soft/dcmqgsm_smm
+export root_config=/mnt/pool/nica/7/mam2mih/soft/basov/fairsoft/install/bin/thisroot.sh
+export mcini_config=/home/ovgol/soft/mcini/macro/config.sh
 
-outdir="/lustre/cbm/users/${USER}/mc/generators/dcmqgsm_smm/${system}/pbeam${pbeam}agev${postfix}/mbias"
+outdir="/mnt/pool/nica/7/ovgol/mc/generators/dcmqgsm_smm/${system}/pbeam${pbeam}agev${postfix}/mbias"
 export outdir_root="$outdir/root/"
 export outdir_dat="$outdir/dat/"
 export outdir_dat_pure="$outdir/dat_pure/"
@@ -91,18 +104,20 @@ mkdir -p $log_dir
 script_path=$(dirname ${0})
 run_gen=${script_path}/run_gen.sh
 rsync -ap --exclude=src ${model_source} $source_dir/
-rsync -vp ${script_path}/input.inp.template $source_dir/dcmqgsm_smm_stable/input.inp 
+rsync -vp ${script_path}/input.inp.template $source_dir/dcmqgsm_smm/input.inp 
 rsync -vp $0 $source_dir 
 rsync -vp $run_gen $source_dir 
+source $mcini_config
+rsync -vp $MCINI/macro/convertDCMQGSM_SMM.C $source_dir 
 run_gen=${source_dir}/$(basename ${run_gen})
 
-sed -i -- "s~SRC_PATH_TEMPLATE~$source_dir/dcmqgsm_smm_stable~g" $source_dir/dcmqgsm_smm_stable/input.inp
-sed -i -- "s~TO_TEMPLATE~$T0~g" $source_dir/dcmqgsm_smm_stable/input.inp
-sed -i -- "s~AP_TEMPLATE~$AP~g" $source_dir/dcmqgsm_smm_stable/input.inp
-sed -i -- "s~AT_TEMPLATE~$AT~g" $source_dir/dcmqgsm_smm_stable/input.inp
-sed -i -- "s~ZP_TEMPLATE~$ZP~g" $source_dir/dcmqgsm_smm_stable/input.inp
-sed -i -- "s~ZT_TEMPLATE~$ZT~g" $source_dir/dcmqgsm_smm_stable/input.inp
-sed -i -- "s~NEVENTS_TEMPLATE~$events_per_file~g" $source_dir/dcmqgsm_smm_stable/input.inp
+sed -i -- "s~SRC_PATH_TEMPLATE~$source_dir/dcmqgsm_smm~g" $source_dir/dcmqgsm_smm/input.inp
+sed -i -- "s~TO_TEMPLATE~$T0~g" $source_dir/dcmqgsm_smm/input.inp
+sed -i -- "s~AP_TEMPLATE~$AP~g" $source_dir/dcmqgsm_smm/input.inp
+sed -i -- "s~AT_TEMPLATE~$AT~g" $source_dir/dcmqgsm_smm/input.inp
+sed -i -- "s~ZP_TEMPLATE~$ZP~g" $source_dir/dcmqgsm_smm/input.inp
+sed -i -- "s~ZT_TEMPLATE~$ZT~g" $source_dir/dcmqgsm_smm/input.inp
+sed -i -- "s~NEVENTS_TEMPLATE~$events_per_file~g" $source_dir/dcmqgsm_smm/input.inp
 
 currentDir=`pwd`
 echo "current dir:" $currentDir

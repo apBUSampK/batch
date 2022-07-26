@@ -1,7 +1,7 @@
 #!/bin/bash
 
 outfilenamemask=dcmqgsm
-filenum=${SLURM_ARRAY_TASK_ID}
+filenum=$((${jobShift}+${SLURM_ARRAY_TASK_ID}))
 jobDir=${log_dir}/${filenum}
 
 mkdir -p ${jobDir}
@@ -22,19 +22,18 @@ echo start_number: ${start_number}
 if [ ! -e ${datfile_pure} ];then
   seed=$(perl -e 'print int rand 99999999, "\n";')
   echo SEED: ${seed}
-  echo $source_dir/dcmqgsm_smm_stable/input.inp | $source_dir/dcmqgsm_smm_stable/bin/hypcoa-b1n $seed
+  echo $source_dir/dcmqgsm_smm/input.inp | $source_dir/dcmqgsm_smm/bin/hypcoa-b1n $seed
 fi
 
 if [ ! -e ${datfile} ];then
   [ -e outfile.r12 ] || gunzip -cv ${datfile_pure} > outfile.r12
-  $source_dir/dcmqgsm_smm_stable/bin/re-cas-smm
+  $source_dir/dcmqgsm_smm/bin/re-cas-smm
 fi
 
 [ -e CAS-SMM-evt.out ] || gunzip -cv ${datfile} > CAS-SMM-evt.out 
 source $root_config
 source $mcini_config
-rsync -v $MCINI/macro/convertDCMQGSM_SMM.C $source_dir 
-root -l -b -q "$source_dir/convertDCMQGSM_SMM.C (\"CAS-SMM-evt.out\",\"$rootfile\", $events_per_file, $split_factor)"
+root -l -b -q $source_dir/convertDCMQGSM_SMM.C"(\"CAS-SMM-evt.out\",\"${rootfile}\", ${events_per_file}, ${split_factor}, ${swapProjTarg}, ${allowPosPzTargetSpect})"
 
 for (( i=0;i<$split_factor;i++ )); 
 do 

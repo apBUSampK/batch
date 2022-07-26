@@ -11,13 +11,16 @@
 #pbeam=6
 #pbeam=8
 #pbeam=10
-export pbeam=12
+#export pbeam=12
 
 #ags:
 #pbeam=2.78
 #pbeam=4.85
 #pbeam=6.87
 #pbeam=8.89
+
+#bman
+pbeam=4.78
 
 #mpd:
 #pbeam=9.81
@@ -33,37 +36,38 @@ export pbeam=12
 #pbeam=40
 #pbeam=158
 
-system=auau
+#system=auau
 #system=pbpb
 #system=agag
+system=xesc
 
 export events_per_file=2
 jobRange=1
 export split_factor=1
 postfix=""
-partition=debug
-#partition=main
-#partition=long
+partition=fast
+#partition=cpu
 
 [ "$system" == "agag" ] && AP=108 && ZP=47 && AT=108 && ZT=47
+[ "$system" == "xesc" ] && AP=131 && ZP=54 && AT=45 && ZT=21
+[ "$system" == "xexe" ] && AP=131 && ZP=54 && AT=131 && ZT=54
 [ "$system" == "auau" ] && AP=197 && ZP=79 && AT=197 && ZT=79
 [ "$system" == "pbpb" ] && AP=208 && ZP=82 && AT=208 && ZT=82
 
-[ "$partition" == "debug" ] && time=0:20:00
-[ "$partition" == "main" ] && time=8:00:00
-[ "$partition" == "long" ] && time=1-00:00:00
+[ "$partition" == "fast" ] && time=1:00:00
+[ "$partition" == "cpu" ] && time=1-00:00:00
 export remove_logs="no"
 
 T0=$(echo "$pbeam" | awk '{print sqrt($pbeam*$pbeam+0.938*0.938)-0.938}')
 
-source_dir_orig=/lustre/cbm/users/ogolosov/mc/macros/submit_dcmsmm
+source_dir_orig=/home/ovgol/batch/submit_dcmqgsm_gem
 #root_config=/lustre/cbm/users/ogolosov/soft/root-5.34.38/bin/thisroot.sh
-export root_config=/cvmfs/fairroot.gsi.de/fairsoft/jun19p1/bin/thisroot.sh
-export mcini_config=/lustre/cbm/users/ogolosov/soft/mcini/macro/config.sh
+export root_config=/mnt/pool/nica/7/mam2mih/soft/basov/fairsoft/install/bin/thisroot.sh
+export mcini_config=/home/ovgol/soft/mcini/macro/config.sh
 
 user=$USER  # test it
 
-outdir="/lustre/cbm/users/${user}/mc/generators/dcmsmm/${system}/pbeam${pbeam}agev${postfix}/mbias"
+outdir="/mnt/pool/nica/7/ovgol/mc/generators/dcmsmm/${system}/pbeam${pbeam}agev${postfix}/mbias"
 export outdir_root="$outdir/root/"
 export outdir_dat="$outdir/dat/"
 export source_dir="$outdir/src/"
@@ -91,7 +95,7 @@ echo "current dir:" $currentDir
 
 run_gen="$source_dir/run_gen.sh"
 
-sbatch -J geni_$pbeam -p $partition -t $time -a $jobRange -D $outdir  -- $run_gen
+sbatch -J geni_$pbeam -p $partition -t $time -a $jobRange -D $outdir -o $outdir/log/%a_%A.log -- $run_gen
 
 
 echo "========================================================"

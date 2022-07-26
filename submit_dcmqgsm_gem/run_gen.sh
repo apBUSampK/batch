@@ -1,8 +1,5 @@
 #!/bin/bash
 
-#SBATCH -o log/%a_%A.o
-#SBATCH -e log/%a_%A.e
-
 outfilenamemask=dcmsmm
 
 filenum=$(($SLURM_ARRAY_TASK_ID))
