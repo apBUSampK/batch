@@ -6,19 +6,41 @@ Logging:
 General:
     Modus:          Collider
     Time_Step_Mode: Fixed
-    Delta_Time:     0.1
-    End_Time:       200.0
-    Randomseed:     -1
-    Nevents:        2000
+    Delta_Time:     0.1        #0.1 / 0.2
+    End_Time:       100.0        #100 / 20
+    Randomseed:     randomrandom
+    Testparticles:  1
+    Nevents:        numberofevents
+    Gaussian_Sigma: 1.0
+    Gauss_Cutoff_In_Sigma: 3.0 #or 4.0
+    Use_Grid: True
 
 Output:
-    Output_Interval: 10.0
+    Output_Interval: 100.0   #or 10.0 / 2.0
+    Density_Type: "none" # baryon / none
     Particles:
-        Format:          ["Root"]
+        Format:     ["Root"]
+        Extended:   False #True
+        Only_Final: Yes     #Yes / No / IfNotEmpty
 #    Collisions:
-#        Format:          ["Root"]
-#    Initial_Conditions:
-#        Format:          ["Root"]
+#        Format:     ["Root"]
+#        Extended:   True
+#        Print_Start_End: True
+
+Collision_Term:
+    Two_to_One:             True
+    Strings:                True
+    NNbar_Treatment:        no annihilation #Options are "no annihilation",
+                                            #"resonances", "strings"
+    Force_Decays_At_End:    True
+    Isotropic:              False
+    Elastic_Cross_Section:  -1.0  # Globally used if non-negative, [mb]
+    Elastic_NN_Cutoff_Sqrts: 1.98 # Exclude the elastic collisions between the two
+                                  # nucleons with the square root s below the value [GeV].
+                                  # Exclusion is effectively turned off by setting any value
+                                  # below 1.88 (the threshold energy of the elastic collsion).
+                                  # And the value is at best not beyond 2.02 ( the threshold
+                                  # energy of the inelastic collision NN->NNpi)
 
 Modi:
     Collider:
@@ -26,10 +48,12 @@ Modi:
             Particles: {2212: 79, 2112: 118} #Gold197
         Target:
             Particles: {2212: 79, 2112: 118} #Gold197
-        P_Lab: 12.0
-        Fermi_Motion: "frozen"
         Impact:
             Sample: "quadratic"
-            Range: [0.0, 20.0]
-#            Random_Reaction_Plane: true
+            Range:  [0.0, 20.0]    #[0.0, 14.0] 
 
+        P_Lab: 12.0
+        Calculation_Frame: "center of velocity"
+        Fermi_Motion: "on"	#frozen / on ? then delta_time 0.01 for Snn=5 / off
+        # Determine whether the first collisions within the same nuclues are allowed
+        Collisions_Within_Nucleus: false

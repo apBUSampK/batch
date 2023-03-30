@@ -1,5 +1,5 @@
-pro projA projZ
-tar targetA targetZ
+pro AP ZP
+tar AT ZT
 
 nev nEvents
 imp -20

@@ -15,7 +15,8 @@
 #pbeam=30
 
 #bman
-pbeam=4
+#pbeam=2.25
+pbeam=3.82
 #pbeam=4.85
 
 #hz
@@ -48,15 +49,16 @@ pbeam=4
 #system=auau
 #system=auag
 #system=aubr
-system=arpb
+#system=arpb
 #system=pbpb
 #system=agag
-#system=xecs
+system=xecs
 #system=xexe
 
 export events_per_file=1000
-jobRange=1-1000
-export jobShift=0
+jobRange=962-1000
+[ $# != 0 ] && jobRange=$1
+export jobShift=9000
 export split_factor=1
 export allowPosPzTargetSpect=false
 postfix=
@@ -76,25 +78,37 @@ partition=fast
 export swapProjTarg=false
 [ $AP -gt $AT ] && export swapProjTarg=true 
 
-[ "$partition" == "fast" ] && time=1:00:00
-[ "$partition" == "cpu" ] && time=1-00:00:00
+T0=$(echo "$pbeam" | awk '{print sqrt($pbeam*$pbeam+0.938*0.938)-0.938}')
 
 export remove_logs="yes"
 
-T0=$(echo "$pbeam" | awk '{print sqrt($pbeam*$pbeam+0.938*0.938)-0.938}')
+[ $partition == fast ] && time=1:00:00
+[ $partition == cpu ] && time=24:00:00
 
-model_source=/home/ovgol/soft/dcmqgsm_smm
-export root_config=/mnt/pool/nica/7/mam2mih/soft/basov/fairsoft/install/bin/thisroot.sh
-export mcini_config=/home/ovgol/soft/mcini/macro/config.sh
+export cluster=nica
+[ ${HOSTNAME} == basov ] && export cluster=basov
 
-outdir="/mnt/pool/nica/7/ovgol/mc/generators/dcmqgsm_smm/${system}/pbeam${pbeam}agev${postfix}/mbias"
+if [ ${cluster} == nica ]; then
+  outdir_base=/scratch1/ogolosov
+  model_source=/scratch1/ogolosov/soft/dcmqgsm_smm
+  export mcini_config=/scratch1/ogolosov/soft/mcini/macro/config.sh
+fi
+
+if [ ${cluster} == basov ]; then
+  outdir_base=/mnt/pool/nica/7/ovgol
+  model_source=/home/ovgol/soft/dcmqgsm_smm
+  export root_config=/mnt/pool/nica/7/mam2mih/soft/basov/fairsoft/install/bin/thisroot.sh
+  export mcini_config=/home/ovgol/soft/mcini/macro/config.sh
+fi
+
+outdir=${outdir_base}/mc/generators/dcmqgsm_smm/${system}/pbeam${pbeam}agev${postfix}/mbias
 export outdir_root="$outdir/root/"
 export outdir_dat="$outdir/dat/"
 export outdir_dat_pure="$outdir/dat_pure/"
 export source_dir="$outdir/src/"
 export log_dir="$outdir/log/"
 
-mkdir -p "$outdir"
+mkdir -p $outdir
 mkdir -p $source_dir
 mkdir -p $outdir_root
 mkdir -p $outdir_dat
@@ -123,9 +137,17 @@ currentDir=`pwd`
 echo "current dir:" $currentDir
 echo "run_gen:" $run_gen
 
-sbatch -J dcm_$pbeam -p $partition -t $time -a $jobRange -o ${log_dir}/%a_%A.log -D $outdir -- $run_gen
+if [ ${cluster} == basov ]; then
+  sbatch -J dcm_$pbeam -p $partition -t $time -a $jobRange -o ${log_dir}/%a_%A.log -D $outdir --export=ALL -- $source_dir/$run_gen
+fi
+
+if [ ${cluster} == nica ]; then
+  exclude_nodes="ncx182.jinr.ru|ncx211.jinr.ru|ncx112.jinr.ru|ncx114.jinr.ru|ncx115.jinr.ru|ncx116.jinr.ru|ncx117.jinr.ru"
+  qsub -N dcm_$pbeam -l s_rt=$time -l h_rt=$time -t $jobRange -o ${log_dir} -e ${log_dir} -V -l "h=!(${exclude_nodes})" $source_dir/$run_gen
+fi
 
 echo "========================================================"
+echo cluster: ${cluster}
 echo "Output will be written to:"
 echo ""
 echo "source code: $source_dir"
@@ -134,5 +156,3 @@ echo "root files: $outdir_root"
 echo ""
 echo "dat files: $outdir_dat"
 echo "========================================================"
-
-

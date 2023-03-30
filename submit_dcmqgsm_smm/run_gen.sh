@@ -1,10 +1,11 @@
 #!/bin/bash
 
 outfilenamemask=dcmqgsm
-filenum=$((${jobShift}+${SLURM_ARRAY_TASK_ID}))
+[ $cluster == basov ] && filenum=$((${jobShift}+${SLURM_ARRAY_TASK_ID}))
+[ $cluster == nica ] && filenum=$((${jobShift}+${SGE_TASK_ID}))
 jobDir=${log_dir}/${filenum}
 
-mkdir -p ${jobDir}
+mkdir -pv ${jobDir}
 cd ${jobDir}
 echo "current dir:" $PWD
 
@@ -12,7 +13,7 @@ elapsed=$SECONDS
 datfile=${outdir_dat}/${outfilenamemask}_${filenum}.dat.gz
 datfile_pure=${outdir_dat_pure}/${outfilenamemask}_pure_${filenum}.dat.gz
 rootfile=${outfilenamemask}_$filenum
-start_number=$(( ($filenum - 1) * $split_factor ))
+start_number=$(( ($filenum - 1) * $split_factor + 1))
 
 echo datfile: ${datfile} 
 echo datfile_pure: ${datfile_pure} 
@@ -31,8 +32,7 @@ if [ ! -e ${datfile} ];then
 fi
 
 [ -e CAS-SMM-evt.out ] || gunzip -cv ${datfile} > CAS-SMM-evt.out 
-source $root_config
-source $mcini_config
+
 root -l -b -q $source_dir/convertDCMQGSM_SMM.C"(\"CAS-SMM-evt.out\",\"${rootfile}\", ${events_per_file}, ${split_factor}, ${swapProjTarg}, ${allowPosPzTargetSpect})"
 
 for (( i=0;i<$split_factor;i++ )); 
