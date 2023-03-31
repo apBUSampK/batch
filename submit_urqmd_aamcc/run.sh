@@ -67,7 +67,7 @@ export cluster=nica
 if [ $cluster == nica ];then
   soft_path=/scratch1/ogolosov/soft
   export root_config=/cvmfs/nica.jinr.ru/centos7/fairsoft/may18/bin/thisroot.sh
-  out_path=/scratch1/${USER}
+  export out_path=/scratch1/${USER}
 else
   echo "Cluster is not specified"
   exit 0
@@ -75,9 +75,9 @@ fi
 
 urqmd_src_dir=${soft_path}/misc/urqmd-3.4
 export unigen_path=${soft_path}/unigen
-export aamcc_path=${out_path}/AAMCCwork/AAMCC/build
+export aamcc_path=$out_path/AAMCCwork/AAMCC/build
 export mcini_path=${soft_path}/mcini
-outdir=${out_path}/UrQMDwork/urqmd3.4_aamcc/${system}/pbeam${pbeam}agev_eos${eos}/mbias${postfix}
+outdir=$out_path/UrQMDwork/urqmd3.4_aamcc/${system}/pbeam${pbeam}agev_eos${eos}/mbias${postfix}
 export outdir_root=$outdir/root/
 export outdir_root_aamcc=$outdir/aamcc/
 export outdir_dat=$outdir/dat/
