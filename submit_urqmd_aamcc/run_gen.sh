@@ -44,6 +44,7 @@ $unigen_path/bin/urqmd2u $datfile $rootfile $events_per_file
 gzip -f $datfile
 
 # AfterBurn UrQMD files in AAMCC
+. $out_path/makeup.sh
 cd $outdir_root_aamcc
 # Create input file
 AAMCCinputString1="1\n1\n"
