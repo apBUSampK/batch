@@ -50,7 +50,7 @@ AAMCCinputString1="1\n1\n"
 AAMCCinputString2="4\nurqmd_aamcc_"
 echo -e $AAMCCinputString1$rootfile$AAMCCinputString2$filenum > .inFile
 # Process afterburning
-$aamcc_path/GRATE < .inFile 1> $outdir_root_aamcc
+${aamcc_path}/GRATE < .inFile 1> $outdir_root_aamcc/log
 echo "${filenum} file is afterburned"
 
 [ $remove_logs == "yes" ] && rm -r ${log_dir}/${filenum}
