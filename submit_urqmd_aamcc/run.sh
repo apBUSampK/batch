@@ -37,7 +37,7 @@ eos=0
 # Number of events
 export events_per_file=1000 # set double to get desired amount after removing empty events
 # Number of jobs
-jobRange=1-20
+jobRange=1-2
 export jobShift=0
 #partition=cpu
 partition=fast
@@ -81,9 +81,9 @@ export mcini_path=${soft_path}/mcini
 outdir=$out_path/UrQMDwork/urqmd3.4_aamcc/${system}/pbeam${pbeam}agev_eos${eos}/mbias${postfix}
 export outdir_root=$outdir/root
 export outdir_root_aamcc=$outdir/aamcc
-export outdir_dat=$outdir/dat/
-export source_dir=$outdir/src/
-export log_dir=$outdir/log/
+export outdir_dat=$outdir/dat
+export source_dir=$outdir/src
+export log_dir=$outdir/log
 
 mkdir -p $outdir
 mkdir -p $source_dir
@@ -117,7 +117,7 @@ echo "current dir:" $currentDir
 if [ ${cluster} == nica ]; then
   exclude_nodes="ncx182.jinr.ru|ncx211.jinr.ru|ncx112.jinr.ru|ncx114.jinr.ru|ncx115.jinr.ru|ncx116.jinr.ru|ncx117.jinr.ru"
   qsub -N urqmd_$pbeam -l s_rt=$time -l h_rt=$time -t $jobRange -o ${log_dir} -e ${log_dir} -V -l "h=!(${exclude_nodes})" $source_dir/$run_gen
-  qsub -hold_jid urqmd_$pbeam $source_dir/aamcc_hadd.sh
+  qsub -hold_jid urqmd_$pbeam $script_dir/aamcc_hadd.sh
 else
   echo "NICA cluster is not defined"
   exit 0
