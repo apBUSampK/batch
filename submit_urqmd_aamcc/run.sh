@@ -76,7 +76,7 @@ fi
 urqmd_src_dir=${soft_path}/misc/urqmd-3.4
 export unigen_path=${soft_path}/unigen
 export mcini_path=${soft_path}/mcini
-outdir=${out_path}/mc/generators/urqmd/v3.4/${system}/pbeam${pbeam}agev_eos${eos}/mbias${postfix}
+outdir=${out_path}/UrQMDwork/urqmd3.4_aamcc/${system}/pbeam${pbeam}agev_eos${eos}/mbias${postfix}
 export outdir_root=$outdir/root/
 export outdir_dat=$outdir/dat/
 export source_dir=$outdir/src/
