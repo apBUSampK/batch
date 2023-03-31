@@ -95,6 +95,7 @@ mkdir -p $log_dir
 
 script_dir=$(dirname -- $0)
 run_gen=run_gen.sh
+aamcc_hadd=aamcc_hadd.sh
 
 rsync -v $0 $source_dir
 rsync -v $script_dir/$run_gen $source_dir
@@ -117,7 +118,7 @@ echo "current dir:" $currentDir
 if [ ${cluster} == nica ]; then
   exclude_nodes="ncx182.jinr.ru|ncx211.jinr.ru|ncx112.jinr.ru|ncx114.jinr.ru|ncx115.jinr.ru|ncx116.jinr.ru|ncx117.jinr.ru"
   qsub -N urqmd_$pbeam -l s_rt=$time -l h_rt=$time -t $jobRange -o ${log_dir} -e ${log_dir} -V -l "h=!(${exclude_nodes})" $source_dir/$run_gen
-  qsub -hold_jid urqmd_$pbeam -o ${outdir_root_aamcc}/log -e ${outdir_root_aamcc}/log $script_dir/aamcc_hadd.sh
+  qsub -hold_jid urqmd_$pbeam -l s_rt=$time -l h_rt=$time -o ${outdir_root_aamcc}/logMergeGrid.o -e ${outdir_root_aamcc}/logMergeGrid.e $script_dir/$aamcc_hadd
 else
   echo "NICA cluster is not defined"
   exit 0
