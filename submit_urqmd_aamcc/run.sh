@@ -35,9 +35,9 @@ pbeam=13
 # Equation of state
 eos=0
 # Number of events
-export events_per_file=10000 # set double to get desired amount after removing empty events
+export events_per_file=1000 # set double to get desired amount after removing empty events
 # Number of jobs
-jobRange=1-1
+jobRange=1-20
 export jobShift=0
 #partition=cpu
 partition=fast
@@ -117,10 +117,13 @@ echo "current dir:" $currentDir
 if [ ${cluster} == nica ]; then
   exclude_nodes="ncx182.jinr.ru|ncx211.jinr.ru|ncx112.jinr.ru|ncx114.jinr.ru|ncx115.jinr.ru|ncx116.jinr.ru|ncx117.jinr.ru"
   qsub -N urqmd_$pbeam -l s_rt=$time -l h_rt=$time -t $jobRange -o ${log_dir} -e ${log_dir} -V -l "h=!(${exclude_nodes})" $source_dir/$run_gen
+  qsub -hold_jid urqmd_$pbeam $source_dir/aamcc_hadd.sh
 else
   echo "NICA cluster is not defined"
   exit 0
 fi
+
+qstat | tail -n 1 | awk '{print $1}'
 
 echo "========================================================"
 echo "Output will be written to:"
