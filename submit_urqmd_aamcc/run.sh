@@ -84,12 +84,14 @@ export outdir_root_aamcc=$outdir/aamcc
 export outdir_dat=$outdir/dat
 export source_dir=$outdir/src
 export log_dir=$outdir/log
+export aamcc_log_dir=$outdir_root_aamcc/log
 
 mkdir -p $outdir
 mkdir -p $source_dir
 mkdir -p $outdir_root
-mkdir -p $outdir_root_aamcc
 mkdir -p $outdir_dat
+mkdir -p $outdir_root_aamcc
+mkdir -p $aamcc_log_dir
 
 mkdir -p $log_dir
 
@@ -118,7 +120,7 @@ echo "current dir:" $currentDir
 if [ ${cluster} == nica ]; then
   exclude_nodes="ncx182.jinr.ru|ncx211.jinr.ru|ncx112.jinr.ru|ncx114.jinr.ru|ncx115.jinr.ru|ncx116.jinr.ru|ncx117.jinr.ru"
   qsub -N urqmd_$pbeam -l s_rt=$time -l h_rt=$time -t $jobRange -o ${log_dir} -e ${log_dir} -V -l "h=!(${exclude_nodes})" $source_dir/$run_gen
-  qsub -hold_jid urqmd_$pbeam -l s_rt=$time -l h_rt=$time -o ${outdir_root_aamcc}/logMergeGrid -e ${outdir_root_aamcc}/logMergeGrid -V -l "h=!(${exclude_nodes})" $script_dir/$aamcc_hadd
+  qsub -hold_jid urqmd_$pbeam -l s_rt=$time -l h_rt=$time -o ${aamcc_log_dir}/logMergeGrid -e ${aamcc_log_dir}/logMergeGrid -V -l "h=!(${exclude_nodes})" $script_dir/$aamcc_hadd
 else
   echo "NICA cluster is not defined"
   exit 0
