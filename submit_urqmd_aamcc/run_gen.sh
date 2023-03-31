@@ -37,10 +37,21 @@ fi
 
 which root
 
+# Convert UrQMD to mcini
 echo $LD_LIBRARY_PATH
 $unigen_path/bin/urqmd2u $datfile $rootfile $events_per_file
 #root $source_dir/convertUrQMD.C"(\"$datfile\",\"$rootfile\")"
 gzip -f $datfile
+
+# AfterBurn UrQMD files in AAMCC
+cd $outdir_root_aamcc
+# Create input file
+AAMCCinputString1="1\n1\n"
+AAMCCinputString2="4\nurqmd_aamcc_"
+echo -e $AAMCCinputString1$rootfile$AAMCCinputString2$filenum > .inFile
+# Process afterburning
+$aamcc_path/GRATE < .inFile 1> $outdir_root_aamcc
+echo "${filenum} file is afterburned"
 
 [ $remove_logs == "yes" ] && rm -r ${log_dir}/${filenum}
 

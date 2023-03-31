@@ -75,9 +75,11 @@ fi
 
 urqmd_src_dir=${soft_path}/misc/urqmd-3.4
 export unigen_path=${soft_path}/unigen
+export aamcc_path=${out_path}/AAMCCwork/AAMCC/build
 export mcini_path=${soft_path}/mcini
 outdir=${out_path}/UrQMDwork/urqmd3.4_aamcc/${system}/pbeam${pbeam}agev_eos${eos}/mbias${postfix}
 export outdir_root=$outdir/root/
+export outdir_root_aamcc=$outdir/aamcc/
 export outdir_dat=$outdir/dat/
 export source_dir=$outdir/src/
 export log_dir=$outdir/log/
@@ -85,6 +87,7 @@ export log_dir=$outdir/log/
 mkdir -p $outdir
 mkdir -p $source_dir
 mkdir -p $outdir_root
+mkdir -p $outdir_root_aamcc
 mkdir -p $outdir_dat
 
 mkdir -p $log_dir
