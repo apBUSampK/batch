@@ -35,9 +35,9 @@ pbeam=13
 # Equation of state
 eos=0
 # Number of events
-export events_per_file=100 # set double to get desired amount after removing empty events
+export events_per_file=10000 # set double to get desired amount after removing empty events
 # Number of jobs
-jobRange=1-2
+jobRange=1-1
 export jobShift=0
 #partition=cpu
 partition=fast
@@ -47,7 +47,8 @@ system=pbpb
 #system=pau
 postfix=
 
-export remove_logs=yes
+# "yes" to remove
+export remove_logs=no 
 
 [ $system == agag ] && AP=108 && ZP=47 && AT=108 && ZT=47
 [ $system == xecs ] && AP=131 && ZP=54 && AT=133 && ZT=55
@@ -115,7 +116,7 @@ echo "current dir:" $currentDir
 
 if [ ${cluster} == nica ]; then
   exclude_nodes="ncx182.jinr.ru|ncx211.jinr.ru|ncx112.jinr.ru|ncx114.jinr.ru|ncx115.jinr.ru|ncx116.jinr.ru|ncx117.jinr.ru"
-  qsub -N dcm_$pbeam -l s_rt=$time -l h_rt=$time -t $jobRange -o ${log_dir} -e ${log_dir} -V -l "h=!(${exclude_nodes})" $source_dir/$run_gen
+  qsub -N urqmd_$pbeam -l s_rt=$time -l h_rt=$time -t $jobRange -o ${log_dir} -e ${log_dir} -V -l "h=!(${exclude_nodes})" $source_dir/$run_gen
 else
   echo "NICA cluster is not defined"
   exit 0

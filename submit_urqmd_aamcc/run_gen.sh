@@ -33,16 +33,17 @@ else
 fi
 
 (
+# Convert UrQMD to mcini
 cd $unigen_path
 source $unigen_path/config/unigenlogin.sh
 #source $mcini_path/macro/config.sh
 
 which root
 
-# Convert UrQMD to mcini
 echo $LD_LIBRARY_PATH
 $unigen_path/bin/urqmd2u $datfile $rootfile $events_per_file
 #root $source_dir/convertUrQMD.C"(\"$datfile\",\"$rootfile\")"
+# Then gzip dat file to save space on disk
 gzip -f $datfile
 )
 
@@ -53,10 +54,10 @@ cd $outdir_root_aamcc
 # Create input file
 AAMCCinputString1="1\n1\n"
 AAMCCinputString2="\n4\nurqmd_aamcc_"
-echo -e $AAMCCinputString1$rootfile$AAMCCinputString2$filenum > .inFile
+echo -e $AAMCCinputString1$rootfile$AAMCCinputString2$filenum > inputFile
 # Process afterburning
-${aamcc_path}/GRATE < .inFile 1> $outdir_root_aamcc/log
-echo "${filenum} file is afterburned"
+${aamcc_path}/GRATE < inputFile 1> $outdir_root_aamcc/log
+echo "File ${filenum} is afterburned"
 )
 
 [ $remove_logs == "yes" ] && rm -r ${log_dir}/${filenum}
