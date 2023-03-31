@@ -48,7 +48,7 @@ gzip -f $datfile
 cd $outdir_root_aamcc
 # Create input file
 AAMCCinputString1="1\n1\n"
-AAMCCinputString2="4\nurqmd_aamcc_"
+AAMCCinputString2="\n4\nurqmd_aamcc_"
 echo -e $AAMCCinputString1$rootfile$AAMCCinputString2$filenum > .inFile
 # Process afterburning
 ${aamcc_path}/GRATE < .inFile 1> $outdir_root_aamcc/log
