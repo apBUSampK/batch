@@ -3,5 +3,6 @@
 (
 . $out_path/makeup.sh
 source $root_config
-hadd -j -f $outdir_root_aamcc/aamccUrQMDhadd.root $outdir_root_aamcc/urqmd_aamcc_*_mcini_.root >& $aamcc_log_dir/logMergeScript
+cd $outdir_root_aamcc
+find ./ -maxdepth 1 -regex "\./urqmd_aamcc_[123456789]+\.root" -exec hadd -j -f aamccUrQMDhadd.root \{\} >& $aamcc_log_dir/logMergeScript +
 )
