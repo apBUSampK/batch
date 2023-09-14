@@ -2,12 +2,12 @@ pro AP ZP
 tar AT ZT
 
 nev nEvents
-imp -20
+imp -2
 
-plb plab 
-tim 200 200
+elb plab 
+tim 5 5
 
-ctp 30 5.
+#ctp 30 5.
 rsd seed
 eos EOS
 

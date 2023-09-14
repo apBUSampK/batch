@@ -27,25 +27,78 @@
 #pbeam=111.13
 
 #na49/61:
-pbeam=13
+#pbeam=13
 #pbeam=30
 #pbeam=40
 #pbeam=158
 
-# Equation of state
+help()
+{
+	echo "Usage:"
+	echo "run.sh [OPTION] [NEVENTS_PER_FILE]"
+	echo "Here NEVENTS_PER_FILE is requested events amount per file (per job). Default is 2000"
+	echo ""
+	echo "Options list:"
+	echo "-h		display this help"
+	echo "-p [float]	projectile beam momentum in lab frame[(A)Gev]. default: 9.81"
+	echo "-f		sets \"partition\" to fast. default: disabled"
+	echo "-s [string]	sets the colliding system. default: pbpb"
+	echo "-j [int]   	number of jobs for calculation. default: 1"
+	echo "-S [string]	suffix to append to the output directory"
+	echo "-c [string]	cluster selection. default and currently only: nica"
+	echo "-m		enable merging"
+}
+
+# Configurable parameters
 eos=0
-# Number of events
-export events_per_file=100 # set double to get desired amount after removing empty events
-# Number of jobs
-jobRange=1-2
-export jobShift=0
-#partition=cpu
-partition=fast
-# Colliding system
-#system=auau
+pbeam=9.81
+partition=cpu
+export cluster=nica
 system=pbpb
-#system=pau
-postfix=
+nJobs=1
+export jobShift=0
+suffix=
+merge=no
+
+export events_per_file=2000
+
+# Internal parameters
+script_dir=$(dirname -- $0)
+run_gen=run_gen.sh
+aamcc_hadd=aamcc_hadd.sh
+
+while getopts ':hp:fs:j:S:c:m' opt; do
+	case "$opt" in
+		h) help; exit 0 ;;
+		p) pbeam=$OPTARG ;;
+		f) partition=fast ;;
+		s) system=$OPTARG ;;
+		j) nJobs=$OPTARG ;;
+		S) suffix=$OPTARG ;;
+		c) export cluster=$OPTARG ;;
+		m) merge=yes ;;
+		:) echo "-$OPTARG is used with an argument! Type \"run.sh -h\" for help!"; exit 1 ;;
+		?) ;;
+		*) echo "-$OPTARG is an invalid option! Type \"run.sh -h\" for help!"; exit 1 ;;
+	esac;
+done
+
+shift $(($OPTIND - 1))
+
+# Number of jobs
+if [[ $nJobs > 0 ]]; then
+	jobRange=1-$nJobs
+else
+	echo "Must have at least one job!"
+	exit 1
+fi
+
+# Number of events
+if [ $1 ]; then
+	export events_per_file=$1
+fi
+
+AP=-1
 
 # "yes" to remove
 export remove_logs=no 
@@ -61,29 +114,30 @@ export remove_logs=no
 [ $system == pau  ] && AP=1 && ZP=1 && AT=197 && ZT=79
 
 [ $partition == fast ] && time=1:00:00
-[ $partition == cpu ] && time=2-00:00:0
+[ $partition == cpu ] && time=2:00:00
 
-export cluster=nica
+
+[[ $AP < 0 ]] && echo "There is no such system set" && exit 1
 
 if [ $cluster == nica ];then
   soft_path=/scratch1/ogolosov/soft
   export root_config=/cvmfs/nica.jinr.ru/centos7/fairsoft/may18/bin/thisroot.sh
   export out_path=/scratch1/${USER}
 else
-  echo "Cluster is not specified"
-  exit 0
+  echo "No such cluster!"
+  exit 1
 fi
 
-urqmd_src_dir=${soft_path}/misc/urqmd-3.4
+export urqmd_src_dir=${soft_path}/misc/urqmd-3.4
 export unigen_path=${soft_path}/unigen
+export aamcc_path=$out_path/aamcc-build
 export mcini_path=${soft_path}/mcini
-outdir=$out_path/UrQMDwork/urqmd3.4_aamcc/${system}/pbeam${pbeam}agev_eos${eos}/mbias${postfix}
-export outdir_root=$outdir/root
-export outdir_dat=$outdir/dat
-export source_dir=$outdir/src
+outdir=$out_path/UrQMD-AMC/v3.4/${system}/pbeam${pbeam}agev_eos${eos}/mbias${suffix}
+export outdir_root=$outdir/pre-amc
+export outdir_root_aamcc=$outdir/post-amc
+export outdir_dat=$outdir/urqmd-dat
+export source_dir=$outdir/exe
 export log_dir=$outdir/log
-export outdir_root_aamcc=$outdir/aamcc
-export aamcc_path=$out_path/AAMCCwork/AAMCC/build
 export aamcc_log_dir=$outdir_root_aamcc/log
 
 mkdir -p $outdir
@@ -94,10 +148,6 @@ mkdir -p $outdir_root_aamcc
 mkdir -p $aamcc_log_dir
 
 mkdir -p $log_dir
-
-script_dir=$(dirname -- $0)
-run_gen=run_gen.sh
-aamcc_hadd=aamcc_hadd.sh
 
 rsync -v $0 $source_dir
 rsync -v $script_dir/$run_gen $source_dir
@@ -114,18 +164,17 @@ sed -i -- "s~EOS~$eos~g" $source_dir/inputfile
 sed -i -- "s~nEvents~$events_per_file~g" $source_dir/inputfile
 sed -i -- "s~plab~$pbeam~g" $source_dir/inputfile
 
-currentDir=`pwd`
-echo "current dir:" $currentDir
 
 if [ ${cluster} == nica ]; then
   exclude_nodes="ncx182.jinr.ru|ncx211.jinr.ru|ncx112.jinr.ru|ncx114.jinr.ru|ncx115.jinr.ru|ncx116.jinr.ru|ncx117.jinr.ru"
   qsub -N urqmd_$pbeam -l s_rt=$time -l h_rt=$time -t $jobRange -o ${log_dir} -e ${log_dir} -V -l "h=!(${exclude_nodes})" $source_dir/$run_gen
-  qsub -hold_jid urqmd_$pbeam -l s_rt=$time -l h_rt=$time -o ${aamcc_log_dir}/logMergeGrid -e ${aamcc_log_dir}/logMergeGrid -V -l "h=!(${exclude_nodes})" $script_dir/$aamcc_hadd
+  if [ ${merge} == yes ]; then
+  qsub -hold_jid urqmd_$pbeam -l s_rt=$time -l h_rt=$time -o ${aamcc_log_dir}/logMergeGrid -e ${aamcc_log_dir}/logMergeGrid -V -l "h=!(${exclude_nodes})" $script_dir/$aamcc_hadd 
+  fi
 else
-  echo "NICA cluster is not defined"
+  echo "No such cluster!F"
   exit 0
 fi
-
 qstat | tail -n 1 | awk '{print $1}'
 
 echo "========================================================"
@@ -137,5 +186,3 @@ echo "root files: $outdir_root"
 echo ""
 echo "dat files: $outdir_dat"
 echo "========================================================"
-
-
