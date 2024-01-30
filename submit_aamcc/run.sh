@@ -88,6 +88,6 @@ export aamcc_path=${usr_dir}/aamcc-build
 . ${usr_dir}/makeup.sh
 
 exclude_nodes="ncx[182,211,112,114-117]"
-sbatch --job-name=aamcc_${proj}${target}_${energy} -t $time --array=$jobRange -o ${out_path}/grid_log/%t.out -e ${out_path}/grid_log/%t.err --export=ALL --exclude=${exclude_nodes} ${dir_name}/run_gen.sh
+sbatch --job-name=aamcc_${proj}${target}_${energy} -t $time --array=$jobRange -o ${out_path}/grid_log/%A_%a.out -e ${out_path}/grid_log/%A_%a.err --export=ALL --exclude=${exclude_nodes} ${dir_name}/run_gen.sh
 
 squeue --name=aamcc_${proj}${target}_${energy}

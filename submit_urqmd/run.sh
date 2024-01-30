@@ -114,7 +114,7 @@ fi
 
 if [ ${cluster} == nica ]; then
   exclude_nodes="ncx[182,211,112,114-117]"
-  sbatch --job-name=dcm_$pbeam -t $time --array=$jobRange -o ${log_dir}/%t.out -e ${log_dir}/%t.err --export=ALL --exclude=${exclude_nodes} $source_dir/$run_gen
+  sbatch --job-name=dcm_$pbeam -t $time --array=$jobRange -o ${log_dir}/%A_%a.out -e ${log_dir}/%A_%a.err --export=ALL --exclude=${exclude_nodes} $source_dir/$run_gen
 fi
 
 echo "========================================================"

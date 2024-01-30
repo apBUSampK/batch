@@ -167,9 +167,9 @@ sed -i -- "s~plab~$pbeam~g" $source_dir/inputfile
 
 if [ ${cluster} == nica ]; then
   exclude_nodes="ncx[182,211,112,114-117]"
-  DEP=$(sbatch --job-name=urqmd_$pbeam -t $time --array=$jobRange -o ${log_dir}/%t.out -e ${log_dir}/%t.err --export=ALL --exclude=${exclude_nodes} --parsable $source_dir/$run_gen)
+  DEP=$(sbatch --job-name=urqmd_$pbeam -t $time --array=$jobRange -o ${log_dir}/%A_%a.out -e ${log_dir}/%A_%a.err --export=ALL --exclude=${exclude_nodes} --parsable $source_dir/$run_gen)
   if [ ${merge} == yes ]; then
-  sbatch --dependency=afterok:${DEP} -t $time -o ${aamcc_log_dir}/logMergeGrid/outpur -e ${aamcc_log_dir}/logMergeGrid/error --export=ALL --exclude=${exclude_nodes} $script_dir/$aamcc_hadd 
+  sbatch --dependency=afterok:${DEP} -t $time -o ${aamcc_log_dir}/logMergeGrid/m_output -e ${aamcc_log_dir}/logMergeGrid/m_error --export=ALL --exclude=${exclude_nodes} $script_dir/$aamcc_hadd 
   fi
 else
   echo "No such cluster!F"
