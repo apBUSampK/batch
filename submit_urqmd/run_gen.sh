@@ -6,8 +6,7 @@ outfilenamemask=urqmd
 
 filenum=$SLURM_ARRAY_TASK_ID
 
-[ $cluster == basov ] && filenum=$((${jobShift}+${SLURM_ARRAY_TASK_ID}))
-[ $cluster == nica ] && filenum=$((${jobShift}+${SGE_TASK_ID}))
+[ $cluster == nica ] && filenum=$((${jobShift}+${SLURM_ARRAY_TASK_ID}))
 jobDir=${log_dir}/${filenum}
 
 source $root_config
