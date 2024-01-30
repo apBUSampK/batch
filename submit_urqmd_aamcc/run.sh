@@ -166,16 +166,16 @@ sed -i -- "s~plab~$pbeam~g" $source_dir/inputfile
 
 
 if [ ${cluster} == nica ]; then
-  exclude_nodes="ncx182.jinr.ru|ncx211.jinr.ru|ncx112.jinr.ru|ncx114.jinr.ru|ncx115.jinr.ru|ncx116.jinr.ru|ncx117.jinr.ru"
-  qsub -N urqmd_$pbeam -l s_rt=$time -l h_rt=$time -t $jobRange -o ${log_dir} -e ${log_dir} -V -l "h=!(${exclude_nodes})" $source_dir/$run_gen
+  exclude_nodes="ncx[182,211,112,114-117]"
+  DEP=$(sbatch --job-name=urqmd_$pbeam -t $time --array=$jobRange -o ${log_dir}/%t.out -e ${log_dir}/%t.err --export=ALL --exclude=${exclude_nodes} --parsable $source_dir/$run_gen)
   if [ ${merge} == yes ]; then
-  qsub -hold_jid urqmd_$pbeam -l s_rt=$time -l h_rt=$time -o ${aamcc_log_dir}/logMergeGrid -e ${aamcc_log_dir}/logMergeGrid -V -l "h=!(${exclude_nodes})" $script_dir/$aamcc_hadd 
+  sbatch --dependency=afterok:${DEP} -t $time -o ${aamcc_log_dir}/logMergeGrid/outpur -e ${aamcc_log_dir}/logMergeGrid/error --export=ALL --exclude=${exclude_nodes} $script_dir/$aamcc_hadd 
   fi
 else
   echo "No such cluster!F"
   exit 0
 fi
-qstat | tail -n 1 | awk '{print $1}'
+squeue --name=urqmd_$pbeam
 
 echo "========================================================"
 echo "Output will be written to:"

@@ -113,8 +113,8 @@ if [ ${cluster} == basov ]; then
 fi
 
 if [ ${cluster} == nica ]; then
-  exclude_nodes="ncx182.jinr.ru|ncx211.jinr.ru|ncx112.jinr.ru|ncx114.jinr.ru|ncx115.jinr.ru|ncx116.jinr.ru|ncx117.jinr.ru"
-  qsub -N dcm_$pbeam -l s_rt=$time -l h_rt=$time -t $jobRange -o ${log_dir} -e ${log_dir} -V -l "h=!(${exclude_nodes})" $source_dir/$run_gen
+  exclude_nodes="ncx[182,211,112,114-117]"
+  sbatch --job-name=dcm_$pbeam -t $time --array=$jobRange -o ${log_dir}/%t.out -e ${log_dir}/%t.err --export=ALL --exclude=${exclude_nodes} $source_dir/$run_gen
 fi
 
 echo "========================================================"

@@ -12,7 +12,7 @@ help()
 	echo "-b:		Set impact parameter lower bound. Use with \"-B\" flag."
 	echo "-B:		Set impact parameter upper bound. Use with \"-b\" flag."
 	echo "-f:		Change the level density function for calculating excitation energy (default is 4, consult AAMCC for further help)"
-	echo "-o:		Set custom output directory (default is ./output in the srcipt's dir)"
+	echo "-o:		Set custom output directory (default is /scratch1/${USER}/AAMCC_output)"
 	echo "-P:		Set output subdirectory prefix (default: \"AAMCC_\")"
 	echo "-S:		Set output subdirectory suffix"
 	echo "-u:		Set directory, containing makeup.sh and aamcc-build dir (default: /scratch1/${USER})"
@@ -66,7 +66,7 @@ energy=$3
 nevents=$4
 
 jobRange=1-$jobs
-time=3:00:00
+time=3:0:0
 
 export out_path=${output_dir}/${pref}${proj}${target}_$( [ $geom == "1" ] && echo "cld_" )${energy}${suf}
 
@@ -87,7 +87,7 @@ sed -i -- "s~ldf~${ldf}~g" $out_path/inputfile
 export aamcc_path=${usr_dir}/aamcc-build
 . ${usr_dir}/makeup.sh
 
-exclude_nodes="ncx182.jinr.ru|ncx211.jinr.ru|ncx112.jinr.ru|ncx114.jinr.ru|ncx115.jinr.ru|ncx116.jinr.ru|ncx117.jinr.ru"
-qsub -N aamcc_${proj}${target}_${energy} -l s_rt=$time -l h_rt=$time -t $jobRange -o ${out_path}/grid_log -e ${out_path}/grid_log -V -l "h=!(${exclude_nodes})" ${dir_name}/run_gen.sh
+exclude_nodes="ncx[182,211,112,114-117]"
+sbatch --job-name=aamcc_${proj}${target}_${energy} -t $time --array=$jobRange -o ${out_path}/grid_log/%t.out -e ${out_path}/grid_log/%t.err --export=ALL --exclude=${exclude_nodes} ${dir_name}/run_gen.sh
 
-qstat | tail -n 1 | awk '{print $1}'
+squeue --name=aamcc_${proj}${target}_${energy}

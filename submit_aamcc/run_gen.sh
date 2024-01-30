@@ -1,6 +1,6 @@
 #!/bin/bash
 
-filenum=${SGE_TASK_ID}
+filenum=${SLURM_ARRAY_TASK_ID}
 (
 cd $out_path
 # Create input file
