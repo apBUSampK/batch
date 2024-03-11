@@ -2,7 +2,7 @@ pro AP ZP
 tar AT ZT
 
 nev nEvents
-imp -2
+imp -20
 
 elb plab 
 tim 5 5

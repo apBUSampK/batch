@@ -40,7 +40,7 @@ help()
 	echo ""
 	echo "Options list:"
 	echo "-h		display this help"
-	echo "-p [float]	projectile beam momentum in lab frame[(A)Gev]. default: 9.81"
+	echo "-p [float]	projectile beam momentum in lab frame[(A)Gev]. default: 9.85"
 	echo "-f		sets \"partition\" to fast. default: disabled"
 	echo "-s [string]	sets the colliding system. default: pbpb"
 	echo "-j [int]   	number of jobs for calculation. default: 1"
@@ -51,7 +51,7 @@ help()
 
 # Configurable parameters
 eos=0
-pbeam=9.81
+pbeam=9.85
 partition=cpu
 export cluster=nica
 system=pbpb
